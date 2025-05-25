@@ -63,7 +63,7 @@ export async function signInWithGoogle() {
   redirect(data.url);
 }
 
-export async function signOut() {
+export async function logOut() {
   const supabase = await createClient();
   const { error } = await supabase.auth.signOut();
 
@@ -88,18 +88,4 @@ export async function resetPassword(formData: FormData) {
 
   revalidatePath("/", "layout");
   redirect("/login");
-}
-export async function updatePassword(formData: FormData) {
-  const supabase = await createClient();
-
-  const password = formData.get("password") as string;
-
-  const { error } = await supabase.auth.updateUser({ password });
-
-  if (error) {
-    redirect("/error");
-  }
-
-  revalidatePath("/", "layout");
-  redirect("/dashboard");
 }
