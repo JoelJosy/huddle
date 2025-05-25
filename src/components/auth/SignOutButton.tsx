@@ -11,7 +11,6 @@ export const SignOutButton = () => {
       <Button
         type="button"
         variant="default"
-        className="w-full"
         onClick={() => {
           logOut();
         }}
