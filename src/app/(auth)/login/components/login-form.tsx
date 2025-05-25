@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { login, signup } from "@/app/(auth)/login/actions";
+import { login } from "@/app/(auth)/login/actions";
 import {
   Card,
   CardContent,
