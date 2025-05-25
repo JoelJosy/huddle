@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signup } from "@/app/(auth)/login/actions";
 
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -10,9 +15,23 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signup } from "@/app/(auth)/login/actions";
 
 export function SignUpForm() {
+  const router = useRouter();
+  const handleSignup = async (formData: FormData) => {
+    try {
+      await signup(formData);
+      toast.success("Check your inbox to confirm your email!");
+
+      // Redirect to login after showing toast
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000); // 2 second delay to show the toast
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -22,7 +41,7 @@ export function SignUpForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action="">
+        <form action={handleSignup}>
           <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
@@ -58,7 +77,7 @@ export function SignUpForm() {
               <Label htmlFor="password">Password</Label>
               <Input name="password" id="password" type="password" />
             </div>
-            <Button formAction={signup} type="submit" className="w-full">
+            <Button type="submit" className="w-full">
               Create an account
             </Button>
           </div>
