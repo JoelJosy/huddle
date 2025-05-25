@@ -20,7 +20,7 @@ export async function login(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signup(formData: FormData) {
@@ -40,7 +40,7 @@ export async function signup(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signInWithGoogle() {
@@ -61,4 +61,45 @@ export async function signInWithGoogle() {
   }
 
   redirect(data.url);
+}
+
+export async function signOut() {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    redirect("/error");
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/login");
+}
+
+export async function resetPassword(formData: FormData) {
+  const supabase = await createClient();
+
+  const email = formData.get("email") as string;
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+  if (error) {
+    redirect("/error");
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/login");
+}
+export async function updatePassword(formData: FormData) {
+  const supabase = await createClient();
+
+  const password = formData.get("password") as string;
+
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    redirect("/error");
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/dashboard");
 }
