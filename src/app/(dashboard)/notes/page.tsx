@@ -48,7 +48,8 @@ async function NotesContent({ searchQuery }: { searchQuery?: string }) {
 }
 
 export default async function NotesPage({ searchParams }: NotesPageProps) {
-  const searchQuery = searchParams.search;
+  const resolvedSearchParams = await searchParams;
+  const searchQuery = resolvedSearchParams.search;
 
   return (
     <div className="container mx-auto px-4 py-8">

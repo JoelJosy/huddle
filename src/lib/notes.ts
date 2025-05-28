@@ -135,7 +135,7 @@ export async function fetchPublicNotes(searchQuery?: string): Promise<Note[]> {
   //   .order("created_at", { ascending: false });
   //
   // if (searchQuery) {
-  //   query = query.ilike("title", `%${searchQuery}%`);
+  //   query = query.or(`title.ilike.%${searchQuery}%,subjects.name.ilike.%${searchQuery}%`);
   // }
   //
   // const { data: notes, error } = await query;
