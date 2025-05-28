@@ -1,10 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 import { NotesSearchBar } from "@/components/notes/NotesSearchBar";
 import { NoteCard } from "@/components/notes/NoteCard";
 import { EmptyState } from "@/components/notes/EmptyState";
 import { fetchPublicNotes } from "@/lib/notes";
+import Link from "next/link";
 
 interface NotesPageProps {
   searchParams: {
@@ -66,7 +68,12 @@ export default async function NotesPage({ searchParams }: NotesPageProps) {
           materials, insights, and knowledge across various subjects.
         </p>
 
-        <NotesSearchBar defaultValue={searchQuery} />
+        <div className="flex flex-col items-center gap-4">
+          <NotesSearchBar defaultValue={searchQuery} />
+          <Button asChild variant={"default"}>
+            <Link href="/notes/create">Create Note</Link>
+          </Button>
+        </div>
       </div>
 
       {/* Notes Content */}

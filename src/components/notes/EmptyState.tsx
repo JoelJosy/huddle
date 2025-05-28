@@ -11,7 +11,7 @@ export function EmptyState() {
         Be the first to share your knowledge with the community!
       </p>
       <Button asChild>
-        <Link href="/dashboard/notes/create">Create First Note</Link>
+        <Link href="/notes/create">Create First Note</Link>
       </Button>
     </div>
   );
