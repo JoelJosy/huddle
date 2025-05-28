@@ -193,13 +193,21 @@ const Navbar = async ({
                     {menu.map((item) => renderMobileMenuItem(item))}
                   </Accordion>
 
-                  <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.title}</a>
-                    </Button>
-                    <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.title}</a>
-                    </Button>
+                  <div className="flex flex-col gap-4">
+                    {user ? (
+                      // Show user menu when logged in
+                      <SignOutButton />
+                    ) : (
+                      // Show login/signup when not logged in
+                      <>
+                        <Button asChild variant="outline">
+                          <Link href={auth.login.url}>Login</Link>
+                        </Button>
+                        <Button asChild>
+                          <Link href={auth.signup.url}>Sign up</Link>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>
