@@ -43,12 +43,13 @@ const NoteViewer: React.FC<NoteViewerProps> = ({ content, wordCount }) => {
     ],
     content: content || "<p>Loading content...</p>",
     autofocus: false,
-    editable: false, // Make it read-only
+    editable: false,
     injectCSS: false,
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm m-0 min-h-[400px] min-w-full p-3",
+        class:
+          "prose prose-sm m-0 p-4 focus:outline-none max-w-none min-h-full",
       },
     },
   });
@@ -62,8 +63,8 @@ const NoteViewer: React.FC<NoteViewerProps> = ({ content, wordCount }) => {
 
   return (
     <div className="space-y-6 lg:col-span-8">
-      <Card className="h-full">
-        <CardHeader>
+      <Card className="flex h-[600px] flex-col">
+        <CardHeader className="flex-shrink-0">
           <CardTitle className="flex items-center justify-between">
             <span>Content</span>
             {!isLoading && (
@@ -73,29 +74,34 @@ const NoteViewer: React.FC<NoteViewerProps> = ({ content, wordCount }) => {
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {isLoading ? (
-              <div className="bg-muted/30 flex min-h-[400px] flex-col rounded-lg border">
-                <div className="text-muted-foreground flex flex-1 items-center justify-center">
-                  Loading content...
-                </div>
-              </div>
-            ) : (
-              <div className="bg-muted/30 flex min-h-[400px] flex-col rounded-lg border">
-                <div className="text-muted-foreground flex-1 text-center">
-                  <EditorContent editor={editor} />
-                </div>
-              </div>
-            )}
 
-            {!isLoading && editor && (
-              <div className="text-muted-foreground text-right text-sm">
-                {wordCount || editor.storage.characterCount.words()} words,{" "}
-                {editor.storage.characterCount.characters()} characters
+        <CardContent className="flex flex-1 flex-col overflow-hidden p-0">
+          {isLoading ? (
+            <div className="bg-muted/30 flex flex-1 flex-col border-t">
+              <div className="text-muted-foreground flex flex-1 items-center justify-center">
+                Loading content...
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="bg-muted/30 flex flex-1 flex-col overflow-hidden border-t">
+              <div className="flex-1 overflow-y-auto">
+                <div className="h-full">
+                  <EditorContent
+                    editor={editor}
+                    className="h-full [&_.ProseMirror]:h-full [&_.ProseMirror]:min-h-full"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Move word count inside CardContent and stick to bottom */}
+          {!isLoading && editor && (
+            <div className="text-muted-foreground flex-shrink-0 border-t bg-white px-3 py-2 text-right text-sm">
+              {wordCount || editor.storage.characterCount.words()} words,{" "}
+              {editor.storage.characterCount.characters()} characters
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

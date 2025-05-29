@@ -2,14 +2,13 @@
 
 import React, { forwardRef, useImperativeHandle } from "react";
 import { Card, CardTitle, CardContent, CardHeader } from "../ui/card";
-
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import MenuBar from "./MenuBar";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
-import CharacterCount from "@tiptap/extension-character-count"; // Import the extension
+import CharacterCount from "@tiptap/extension-character-count";
 
 export interface NoteEditorRef {
   getJSON: () => any;
@@ -41,7 +40,7 @@ const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
       Highlight,
       Underline,
       CharacterCount.configure({
-        limit: 50000, // Optional: set a character limit
+        limit: 50000,
       }),
     ],
     content: "<p>Enter note content here!</p>",
@@ -51,7 +50,8 @@ const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm m-0 min-h-[600px] min-w-full p-3",
+        class:
+          "prose prose-sm m-0 p-4 focus:outline-none max-w-none min-h-full",
       },
     },
   });
@@ -66,30 +66,38 @@ const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
 
   return (
     <div className="space-y-6 lg:col-span-8">
-      <Card className="h-full">
-        <CardHeader>
+      <Card className="flex h-[600px] flex-col">
+        <CardHeader className="flex-shrink-0">
           <CardTitle className="flex items-center justify-between">
             <span>Content</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <MenuBar editor={editor} />
 
-            <div className="bg-muted/30 flex min-h-[600px] flex-col rounded-lg border">
-              <div className="text-muted-foreground flex-1 text-center">
-                <EditorContent editor={editor} />
+        <CardContent className="flex flex-1 flex-col overflow-hidden p-4">
+          {/* MenuBar at the top */}
+          <div className="mb-4 flex-shrink-0">
+            <MenuBar editor={editor} />
+          </div>
+
+          {/* Scrollable editor content */}
+          <div className="bg-muted/30 flex flex-1 flex-col overflow-hidden rounded-lg border">
+            <div className="flex-1 overflow-y-auto">
+              <div className="h-full">
+                <EditorContent
+                  editor={editor}
+                  className="h-full [&_.ProseMirror]:h-full [&_.ProseMirror]:min-h-full"
+                />
               </div>
             </div>
-
-            {/* Word count display at bottom */}
-            {editor && (
-              <div className="text-muted-foreground text-right text-sm">
-                {editor.storage.characterCount.words()} words,{" "}
-                {editor.storage.characterCount.characters()} characters
-              </div>
-            )}
           </div>
+
+          {/* Word count display at bottom with white background */}
+          {editor && (
+            <div className="text-muted-foreground mt-4 flex-shrink-0 rounded-b-lg border-t border-r border-b border-l bg-white px-3 py-2 text-right text-sm">
+              {editor.storage.characterCount.words()} words,{" "}
+              {editor.storage.characterCount.characters()} characters
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

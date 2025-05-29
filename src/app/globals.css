@@ -243,3 +243,48 @@
   color: inherit;
   opacity: 0.8;
 }
+
+/* Add these styles to your existing globals.css */
+
+/* Custom scrollbar for editor content */
+.ProseMirror {
+  outline: none;
+  height: 100%;
+}
+
+/* Smooth scrolling for editor containers */
+.editor-scroll-container {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styling (optional) */
+.editor-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.editor-scroll-container::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+.editor-scroll-container::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+.editor-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Add this to ensure proper TipTap scrolling */
+
+.ProseMirror {
+  outline: none !important;
+  min-height: 100%;
+  height: 100%;
+}
+
+/* Ensure the editor content area scrolls properly */
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
