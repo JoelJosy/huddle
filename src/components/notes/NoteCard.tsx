@@ -8,12 +8,26 @@ interface NoteCardProps {
 }
 
 export function NoteCard({ note }: NoteCardProps) {
+  const getUserDisplayName = () => {
+    // Priority: full_name > username > email prefix
+    if (note.profiles?.full_name) {
+      return note.profiles.full_name;
+    }
+    if (note.profiles?.username) {
+      return note.profiles.username;
+    }
+    if (note.profiles?.email) {
+      return note.profiles.email.split("@")[0];
+    }
+    return "Unknown User";
+  };
+
   return (
     <Card className="flex h-full flex-col">
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <h3 className="line-clamp-2 text-lg font-semibold hover:underline">
-            <Link href={note.content_url || "#"}>{note.title}</Link>
+            <Link href={`/notes/${note.id}`}>{note.title}</Link>
           </h3>
           <Badge variant="secondary" className="shrink-0">
             {note.subjects?.name || "General"}
@@ -41,9 +55,10 @@ export function NoteCard({ note }: NoteCardProps) {
           </div>
         )}
 
-        <div className="text-muted-foreground text-xs">
-          <p>Created by {note.profiles?.full_name || "Unknown"}</p>
+        <div className="text-muted-foreground space-y-1 text-xs">
+          <p>Created by {getUserDisplayName()}</p>
           <p>{new Date(note.created_at).toLocaleDateString()}</p>
+          {note.word_count && <p>{note.word_count} words</p>}
         </div>
       </CardContent>
     </Card>

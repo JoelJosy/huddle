@@ -85,3 +85,91 @@ export async function fetchPublicNotes(searchQuery?: string): Promise<Note[]> {
 
   return transformedNotes;
 }
+
+// Add this function to your existing notes.ts file
+
+export async function fetchNoteById(noteId: string): Promise<Note | null> {
+  const supabase = await createClient();
+
+  // Validate the noteId
+  if (!noteId || noteId === "undefined" || noteId.trim() === "") {
+    console.error("Invalid note ID provided:", noteId);
+    return null;
+  }
+
+  console.log("Fetching note with ID:", noteId); // Debug log
+
+  try {
+    // Get the note with its subject
+    const { data: note, error } = await supabase
+      .from("notes")
+      .select(
+        `
+        id,
+        title,
+        excerpt,
+        content_url,
+        tags,
+        created_at,
+        word_count,
+        user_id,
+        subjects(name)
+      `,
+      )
+      .eq("id", noteId)
+      .eq("visibility", "public") // Only public notes
+      .single();
+
+    if (error) {
+      console.error("Error fetching note:", error);
+      return null;
+    }
+
+    if (!note) {
+      console.log("No note found with ID:", noteId);
+      return null;
+    }
+
+    // Fetch the profile for this note's author
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id, full_name, email, username")
+      .eq("id", note.user_id)
+      .single();
+
+    // Transform the data to match our interface
+    const transformedNote: Note = {
+      ...note,
+      subjects: Array.isArray(note.subjects)
+        ? note.subjects[0] || null
+        : note.subjects,
+      profiles: profile || null,
+    };
+
+    return transformedNote;
+  } catch (error) {
+    console.error("Unexpected error fetching note:", error);
+    return null;
+  }
+}
+
+export async function fetchNoteContent(contentUrl: string): Promise<any> {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.storage
+      .from("note-contents")
+      .download(contentUrl);
+
+    if (error) {
+      console.error("Error fetching note content:", error);
+      return null;
+    }
+
+    const content = await data.text();
+    return JSON.parse(content);
+  } catch (error) {
+    console.error("Error parsing note content:", error);
+    return null;
+  }
+}
