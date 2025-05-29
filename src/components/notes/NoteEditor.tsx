@@ -28,6 +28,7 @@ const NoteEditor = () => {
       }),
       TextAlign.configure({
         types: ["heading", "paragraph"],
+        defaultAlignment: "left",
       }),
       Highlight,
       Underline,
