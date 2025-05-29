@@ -9,7 +9,7 @@ import MenuBar from "./MenuBar";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
-import CharacterCount from "@tiptap/extension-character-count"; // Add this
+import CharacterCount from "@tiptap/extension-character-count"; // Import the extension
 
 export interface NoteEditorRef {
   getJSON: () => any;
@@ -41,7 +41,7 @@ const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
       Highlight,
       Underline,
       CharacterCount.configure({
-        limit: 10000, // Optional: set a character limit
+        limit: 50000, // Optional: set a character limit
       }),
     ],
     content: "<p>Enter note content here!</p>",
@@ -70,12 +70,6 @@ const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Content</span>
-            {editor && (
-              <div className="text-muted-foreground text-sm">
-                {editor.storage.characterCount.words()} words,{" "}
-                {editor.storage.characterCount.characters()} characters
-              </div>
-            )}
           </CardTitle>
         </CardHeader>
         <CardContent>

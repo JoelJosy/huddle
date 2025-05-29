@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef } from "react"; // Remove useEffect import
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,9 @@ export default function CreateNotePage() {
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  // Remove: const [wordCount, setWordCount] = useState(0);
+
+  // Remove the entire useEffect block
 
   const addTag = (e?: React.MouseEvent) => {
     if (e) {
@@ -52,7 +55,6 @@ export default function CreateNotePage() {
   const extractExcerpt = (content: any): string => {
     if (!content || !content.content) return "";
 
-    // Extract text from TipTap JSON content
     let text = "";
     const extractText = (node: any) => {
       if (node.type === "text") {
@@ -64,7 +66,6 @@ export default function CreateNotePage() {
 
     content.content.forEach(extractText);
 
-    // Return first 200 characters as excerpt
     return text.slice(0, 200) + (text.length > 200 ? "..." : "");
   };
 
@@ -76,12 +77,14 @@ export default function CreateNotePage() {
       return;
     }
 
-    // Get content from TipTap editor
     const editorContent = editorRef.current?.getJSON();
     if (!editorContent) {
       toast.error("Please add some content to your note.");
       return;
     }
+
+    // Get word count only when submitting
+    const wordCount = editorRef.current?.getWordCount() || 0;
 
     setIsLoading(true);
 
@@ -94,6 +97,7 @@ export default function CreateNotePage() {
         tags: tags,
         content: editorContent,
         excerpt: excerpt,
+        wordCount: wordCount, // Use the word count from submission time
       });
 
       if (result.success) {
@@ -102,7 +106,11 @@ export default function CreateNotePage() {
       }
     } catch (error) {
       console.error("Error creating note:", error);
-      toast.error("Failed to create note. Please try again.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to create note. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -113,10 +121,9 @@ export default function CreateNotePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
         <div className="mb-8">
           <Button variant="ghost" asChild className="mb-4">
-            <Link href="/dashboard/notes">
+            <Link href="/notes">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Notes
             </Link>
@@ -129,11 +136,11 @@ export default function CreateNotePage() {
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-            {/* Left Section - Form Fields */}
             <div className="space-y-6 lg:col-span-4">
               <Card>
                 <CardHeader>
                   <CardTitle>Note Details</CardTitle>
+                  {/* Remove the word count display from header */}
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Title */}
@@ -219,7 +226,6 @@ export default function CreateNotePage() {
 
                   <Separator />
 
-                  {/* Submit Buttons */}
                   <div className="flex flex-col gap-3">
                     <Button
                       type="submit"
@@ -242,7 +248,6 @@ export default function CreateNotePage() {
               </Card>
             </div>
 
-            {/* Right Section */}
             <NoteEditor ref={editorRef} />
           </div>
         </form>

@@ -10,6 +10,7 @@ export interface CreateNoteData {
   tags: string[];
   content: any;
   excerpt?: string;
+  wordCount: number; // Add word count to interface
 }
 
 export async function createNote(data: CreateNoteData) {
@@ -68,7 +69,7 @@ export async function createNote(data: CreateNoteData) {
       subjectId = newSubject.id;
     }
 
-    // Create the note record
+    // Create the note record with word count
     const { data: note, error: noteError } = await supabase
       .from("notes")
       .insert({
@@ -81,6 +82,7 @@ export async function createNote(data: CreateNoteData) {
         visibility: "public",
         is_public: true,
         group_id: null,
+        word_count: data.wordCount, // Add word count to database insert
       })
       .select()
       .single();
