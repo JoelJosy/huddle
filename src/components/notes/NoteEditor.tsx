@@ -6,29 +6,29 @@ import { Separator } from "@radix-ui/react-separator";
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import {
-  Bold,
-  Italic,
-  Strikethrough,
-  Code,
-  List,
-  ListOrdered,
-  Quote,
-  Undo,
-  Redo,
-  Heading1,
-  Heading2,
-  Heading3,
-} from "lucide-react";
+import MenuBar from "./MenuBar";
+import TextAlign from "@tiptap/extension-text-align";
+import Highlight from "@tiptap/extension-highlight";
 
 const NoteEditor = () => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3],
+        bulletList: {
+          HTMLAttributes: {
+            class: "list-disc ml-3",
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: "list-decimal ml-3",
+          },
         },
       }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      Highlight,
     ],
     content: "<p>Enter note content here!</p>",
     // place the cursor in the editor after initialization
@@ -37,6 +37,8 @@ const NoteEditor = () => {
     editable: true,
     // prevent loading the default CSS (which isn't much anyway)
     injectCSS: false,
+    // prevent SSR hydration mismatches
+    immediatelyRender: false,
     editorProps: {
       attributes: {
         class: "prose prose-sm m-0 min-h-[600px] min-w-full p-3",
@@ -52,25 +54,7 @@ const NoteEditor = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* Editor toolbar placeholder */}
-            <div className="bg-muted/20 flex items-center gap-2 rounded border p-2">
-              <div className="flex gap-1">
-                <div className="bg-muted h-8 w-8 rounded"></div>
-                <div className="bg-muted h-8 w-8 rounded"></div>
-                <div className="bg-muted h-8 w-8 rounded"></div>
-              </div>
-              <Separator orientation="vertical" className="h-6" />
-              <div className="flex gap-1">
-                <div className="bg-muted h-8 w-16 rounded"></div>
-                <div className="bg-muted h-8 w-16 rounded"></div>
-              </div>
-              <Separator orientation="vertical" className="h-6" />
-              <div className="flex gap-1">
-                <div className="bg-muted h-8 w-8 rounded"></div>
-                <div className="bg-muted h-8 w-8 rounded"></div>
-                <div className="bg-muted h-8 w-8 rounded"></div>
-              </div>
-            </div>
+            <MenuBar editor={editor} />
 
             <div className="bg-muted/30 flex min-h-[600px] flex-col rounded-lg border">
               {/* Tiptap editor */}
