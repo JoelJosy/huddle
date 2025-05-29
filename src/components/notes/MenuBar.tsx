@@ -8,6 +8,7 @@ import {
   Heading3,
   Highlighter,
   Italic,
+  Underline,
   List,
   ListOrdered,
   Strikethrough,
@@ -40,6 +41,11 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
       icon: <Bold className="size-4" />,
       onClick: () => editor.chain().focus().toggleBold().run(),
       pressed: editor.isActive("bold"),
+    },
+    {
+      icon: <Underline className="size-4" />,
+      onClick: () => editor.chain().focus().toggleUnderline().run(),
+      pressed: editor.isActive("underline"),
     },
     {
       icon: <Italic className="size-4" />,

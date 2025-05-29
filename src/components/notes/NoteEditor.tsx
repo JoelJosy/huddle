@@ -9,6 +9,7 @@ import StarterKit from "@tiptap/starter-kit";
 import MenuBar from "./MenuBar";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
+import Underline from "@tiptap/extension-underline";
 
 const NoteEditor = () => {
   const editor = useEditor({
@@ -29,6 +30,7 @@ const NoteEditor = () => {
         types: ["heading", "paragraph"],
       }),
       Highlight,
+      Underline,
     ],
     content: "<p>Enter note content here!</p>",
     // place the cursor in the editor after initialization
