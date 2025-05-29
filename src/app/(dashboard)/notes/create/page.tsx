@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
+import NoteEditor from "@/components/notes/NoteEditor";
 
 export default function CreateNotePage() {
   const router = useRouter();
@@ -211,55 +212,8 @@ export default function CreateNotePage() {
               </Card>
             </div>
 
-            {/* Right Section - Rich Text Editor (8 columns) */}
-            <div className="space-y-6 lg:col-span-8">
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>Content</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {/* Editor toolbar placeholder */}
-                    <div className="bg-muted/20 flex items-center gap-2 rounded border p-2">
-                      <div className="flex gap-1">
-                        <div className="bg-muted h-8 w-8 rounded"></div>
-                        <div className="bg-muted h-8 w-8 rounded"></div>
-                        <div className="bg-muted h-8 w-8 rounded"></div>
-                      </div>
-                      <Separator orientation="vertical" className="h-6" />
-                      <div className="flex gap-1">
-                        <div className="bg-muted h-8 w-16 rounded"></div>
-                        <div className="bg-muted h-8 w-16 rounded"></div>
-                      </div>
-                      <Separator orientation="vertical" className="h-6" />
-                      <div className="flex gap-1">
-                        <div className="bg-muted h-8 w-8 rounded"></div>
-                        <div className="bg-muted h-8 w-8 rounded"></div>
-                        <div className="bg-muted h-8 w-8 rounded"></div>
-                      </div>
-                    </div>
-
-                    <div className="bg-muted/30 min-h-[600px] rounded-lg border p-4">
-                      {/* Placeholder for Tiptap editor */}
-                      <div className="text-muted-foreground py-32 text-center">
-                        <div className="space-y-2">
-                          <p className="text-xl font-medium">
-                            Rich Text Editor
-                          </p>
-                          <p className="text-sm">
-                            Tiptap editor will be integrated here
-                          </p>
-                          <p className="text-xs">
-                            This expanded area provides ample space for content
-                            creation
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            {/* Right Section */}
+            <NoteEditor />
           </div>
         </form>
       </div>
