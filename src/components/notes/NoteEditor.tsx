@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
-import { Card, CardTitle, CardContent, CardHeader } from "../ui/card";
-import { Separator } from "@radix-ui/react-separator";
+import React, { forwardRef, useImperativeHandle } from "react";
+import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -11,7 +10,13 @@ import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 
-const NoteEditor = () => {
+export interface NoteEditorRef {
+  getJSON: () => any;
+  getHTML: () => string;
+  getText: () => string;
+}
+
+const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -34,13 +39,9 @@ const NoteEditor = () => {
       Underline,
     ],
     content: "<p>Enter note content here!</p>",
-    // place the cursor in the editor after initialization
     autofocus: true,
-    // make the text editable (default is true)
     editable: true,
-    // prevent loading the default CSS (which isn't much anyway)
     injectCSS: false,
-    // prevent SSR hydration mismatches
     immediatelyRender: false,
     editorProps: {
       attributes: {
@@ -48,6 +49,12 @@ const NoteEditor = () => {
       },
     },
   });
+
+  useImperativeHandle(ref, () => ({
+    getJSON: () => editor?.getJSON(),
+    getHTML: () => editor?.getHTML() || "",
+    getText: () => editor?.getText() || "",
+  }));
 
   return (
     <div className="space-y-6 lg:col-span-8">
@@ -60,7 +67,6 @@ const NoteEditor = () => {
             <MenuBar editor={editor} />
 
             <div className="bg-muted/30 flex min-h-[600px] flex-col rounded-lg border">
-              {/* Tiptap editor */}
               <div className="text-muted-foreground flex-1 text-center">
                 <EditorContent editor={editor} />
               </div>
@@ -70,6 +76,8 @@ const NoteEditor = () => {
       </Card>
     </div>
   );
-};
+});
+
+NoteEditor.displayName = "NoteEditor";
 
 export default NoteEditor;

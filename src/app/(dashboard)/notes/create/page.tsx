@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,21 +9,24 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 import Link from "next/link";
 import NoteEditor from "@/components/notes/NoteEditor";
+import { createNote } from "@/lib/noteActions";
 
 export default function CreateNotePage() {
   const router = useRouter();
+  const editorRef = useRef<any>(null);
+
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const addTag = (e?: React.MouseEvent) => {
     if (e) {
-      e.preventDefault(); // Prevent form submission
+      e.preventDefault();
     }
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
       setTags([...tags, tagInput.trim()]);
@@ -33,8 +36,8 @@ export default function CreateNotePage() {
 
   const removeTag = (tagToRemove: string, e?: React.MouseEvent) => {
     if (e) {
-      e.preventDefault(); // Prevent form submission
-      e.stopPropagation(); // Prevent event bubbling
+      e.preventDefault();
+      e.stopPropagation();
     }
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
@@ -46,32 +49,60 @@ export default function CreateNotePage() {
     }
   };
 
+  const extractExcerpt = (content: any): string => {
+    if (!content || !content.content) return "";
+
+    // Extract text from TipTap JSON content
+    let text = "";
+    const extractText = (node: any) => {
+      if (node.type === "text") {
+        text += node.text;
+      } else if (node.content) {
+        node.content.forEach(extractText);
+      }
+    };
+
+    content.content.forEach(extractText);
+
+    // Return first 200 characters as excerpt
+    return text.slice(0, 200) + (text.length > 200 ? "..." : "");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim() || !subject.trim()) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    // Get content from TipTap editor
+    const editorContent = editorRef.current?.getJSON();
+    if (!editorContent) {
+      toast.error("Please add some content to your note.");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const excerpt = extractExcerpt(editorContent);
 
-      const newNote = {
-        id: Date.now().toString(),
+      const result = await createNote({
         title: title.trim(),
         subject: subject.trim(),
         tags: tags,
-        content: content,
-        created_at: new Date().toISOString(),
-      };
+        content: editorContent,
+        excerpt: excerpt,
+      });
 
-      console.log("Created note:", newNote);
-      router.push("/dashboard/notes");
+      if (result.success) {
+        toast.success("Note created successfully!");
+        router.push("/notes");
+      }
     } catch (error) {
       console.error("Error creating note:", error);
+      toast.error("Failed to create note. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -97,9 +128,8 @@ export default function CreateNotePage() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Two-section layout with custom grid columns */}
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-            {/* Left Section - Form Fields (4 columns) */}
+            {/* Left Section - Form Fields */}
             <div className="space-y-6 lg:col-span-4">
               <Card>
                 <CardHeader>
@@ -213,7 +243,7 @@ export default function CreateNotePage() {
             </div>
 
             {/* Right Section */}
-            <NoteEditor />
+            <NoteEditor ref={editorRef} />
           </div>
         </form>
       </div>
