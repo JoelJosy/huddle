@@ -1,7 +1,7 @@
 "use client";
 
 import React, { forwardRef, useImperativeHandle } from "react";
-import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardTitle, CardContent, CardHeader } from "../ui/card";
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -9,11 +9,14 @@ import MenuBar from "./MenuBar";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
+import CharacterCount from "@tiptap/extension-character-count"; // Add this
 
 export interface NoteEditorRef {
   getJSON: () => any;
   getHTML: () => string;
   getText: () => string;
+  getWordCount: () => number;
+  getCharacterCount: () => number;
 }
 
 const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
@@ -37,6 +40,9 @@ const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
       }),
       Highlight,
       Underline,
+      CharacterCount.configure({
+        limit: 10000, // Optional: set a character limit
+      }),
     ],
     content: "<p>Enter note content here!</p>",
     autofocus: true,
@@ -54,13 +60,23 @@ const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
     getJSON: () => editor?.getJSON(),
     getHTML: () => editor?.getHTML() || "",
     getText: () => editor?.getText() || "",
+    getWordCount: () => editor?.storage.characterCount.words() || 0,
+    getCharacterCount: () => editor?.storage.characterCount.characters() || 0,
   }));
 
   return (
     <div className="space-y-6 lg:col-span-8">
       <Card className="h-full">
         <CardHeader>
-          <CardTitle>Content</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            <span>Content</span>
+            {editor && (
+              <div className="text-muted-foreground text-sm">
+                {editor.storage.characterCount.words()} words,{" "}
+                {editor.storage.characterCount.characters()} characters
+              </div>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -71,6 +87,14 @@ const NoteEditor = forwardRef<NoteEditorRef>((props, ref) => {
                 <EditorContent editor={editor} />
               </div>
             </div>
+
+            {/* Word count display at bottom */}
+            {editor && (
+              <div className="text-muted-foreground text-right text-sm">
+                {editor.storage.characterCount.words()} words,{" "}
+                {editor.storage.characterCount.characters()} characters
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
