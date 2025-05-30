@@ -26,11 +26,9 @@ export async function createNote(data: CreateNoteData) {
     throw new Error("User not authenticated");
   }
 
-  console.log("Current user ID:", user.id); // Debug log
-
   try {
     // Generate a unique filename for the content
-    const contentFileName = `notes/${user.id}/${Date.now()}-${crypto.randomUUID()}.json`;
+    const contentFileName = `${user.id}/${Date.now()}-${crypto.randomUUID()}.json`;
 
     // Upload content to Supabase storage
     const { error: storageError } = await supabase.storage
@@ -99,6 +97,53 @@ export async function createNote(data: CreateNoteData) {
     return { success: true, noteId: note.id };
   } catch (error) {
     console.error("Error creating note:", error);
+    throw error;
+  }
+}
+
+export async function deleteNote(noteId: string) {
+  const supabase = await createClient();
+
+  try {
+    // 1. Fetch the note to get the content URL
+    const { data: note, error: noteError } = await supabase
+      .from("notes")
+      .select("content_url")
+      .eq("id", noteId)
+      .single();
+
+    if (noteError || !note) {
+      throw new Error(`Note not found: ${noteError?.message}`);
+    }
+
+    const { content_url } = note;
+
+    // 2. Delete the content file from storage
+    const { error: storageError } = await supabase.storage
+      .from("note-contents")
+      .remove([content_url]);
+
+    if (storageError) {
+      console.error("Failed to delete content file:", storageError);
+      throw new Error(`Failed to delete content file: ${storageError.message}`);
+    }
+
+    // 3. Delete the note record
+    const { error: deleteError } = await supabase
+      .from("notes")
+      .delete()
+      .eq("id", noteId);
+
+    if (deleteError) {
+      throw new Error(`Failed to delete note: ${deleteError.message}`);
+    }
+
+    // 4. Revalidate frontend cache/path
+    revalidatePath("/notes");
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting note:", error);
     throw error;
   }
 }

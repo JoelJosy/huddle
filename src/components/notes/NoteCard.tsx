@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
 import type { Note } from "@/lib/notes";
+import { deleteNote } from "@/lib/noteActions";
 
 interface NoteCardProps {
   note: Note;
@@ -26,14 +27,6 @@ export function NoteCard({ note, currentUserId }: NoteCardProps) {
   };
 
   const isOwner = currentUserId === note.user_id;
-
-  const handleDelete = async () => {
-    // Implement delete functionality here
-    // Example:
-    // await deleteNote(note.id);
-    // Refresh the notes list after deletion
-    console.log(`Deleting note ${note.id}`);
-  };
 
   return (
     <Card className="flex h-full flex-col">
@@ -82,7 +75,11 @@ export function NoteCard({ note, currentUserId }: NoteCardProps) {
                 <Edit className="h-4 w-4" />
               </Button>
             </Link>
-            <Button variant="ghost" size="icon" onClick={handleDelete}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => deleteNote(note.id)}
+            >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
