@@ -47,7 +47,7 @@ export function NotesSearchBar({ defaultValue }: SearchBarProps) {
       <form action={handleSearch}>
         <Input
           name="search"
-          placeholder="Search notes by title..."
+          placeholder="Search notes by title, subject, or tags"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           className="bg-white pr-10 pl-10"

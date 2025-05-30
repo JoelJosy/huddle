@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Book, Boxes, Menu, Sunset, Trees, Zap } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 
@@ -23,7 +24,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Link from "next/link";
 import { SignOutButton } from "../auth/SignOutButton";
 
 interface MenuItem {
@@ -83,25 +83,25 @@ const Navbar = async ({
     },
     {
       title: "Notes",
-      url: "#",
+      url: "/notes",
       items: [
         {
           title: "Browse Public Notes",
           description: "Explore notes shared by our community",
           icon: <Book className="size-5 shrink-0" />,
-          url: "#",
+          url: "/notes",
         },
         {
           title: "Create Note",
           description: "We are here to help you with any questions you have",
           icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
+          url: "/notes/create",
         },
         {
           title: "My Notes",
           description: "Check the current status of our services and APIs",
           icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
+          url: "/notes/my-notes",
         },
       ],
     },
@@ -227,7 +227,11 @@ const renderMenuItem = (item: MenuItem) => {
         <NavigationMenuContent className="bg-popover text-popover-foreground">
           {item.items.map((subItem) => (
             <NavigationMenuLink asChild key={subItem.title} className="w-80">
-              <SubMenuLink item={subItem} />
+              <Link href={subItem.url} passHref>
+                {" "}
+                {/* Use Link here */}
+                <SubMenuLink item={subItem} />
+              </Link>
             </NavigationMenuLink>
           ))}
         </NavigationMenuContent>
@@ -256,7 +260,11 @@ const renderMobileMenuItem = (item: MenuItem) => {
         </AccordionTrigger>
         <AccordionContent className="mt-2">
           {item.items.map((subItem) => (
-            <SubMenuLink key={subItem.title} item={subItem} />
+            <Link key={subItem.title} href={subItem.url} passHref>
+              {" "}
+              {/* Use Link here */}
+              <SubMenuLink item={subItem} />
+            </Link>
           ))}
         </AccordionContent>
       </AccordionItem>
