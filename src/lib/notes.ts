@@ -103,7 +103,73 @@ export async function fetchPublicNotes(searchQuery?: string): Promise<Note[]> {
   return transformedNotes;
 }
 
-// Add this function to your existing notes.ts file
+export async function fetchUserNotes(
+  userId: string,
+  searchQuery?: string,
+): Promise<Note[]> {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("notes")
+    .select(
+      `
+      id,
+      title,
+      excerpt,
+      content_url,
+      tags,
+      created_at,
+      word_count,
+      user_id,
+      subjects(name)
+    `,
+    )
+    .eq("user_id", userId) // Filter by user ID
+    .order("created_at", { ascending: false });
+
+  if (searchQuery) {
+    query = query.ilike("title", `%${searchQuery}%`);
+  }
+
+  const { data: notes, error } = await query;
+
+  if (error) {
+    console.error("Error fetching user notes:", error);
+    return [];
+  }
+
+  if (!notes || notes.length === 0) {
+    return [];
+  }
+
+  // Fetch profiles for the user
+  const { data: profiles, error: profilesError } = await supabase
+    .from("profiles")
+    .select("id, full_name, email, username")
+    .eq("id", userId)
+    .single();
+
+  if (profilesError) {
+    console.error("Error fetching profile:", profilesError);
+  }
+
+  const transformedNotes: Note[] = notes.map((note) => ({
+    id: note.id,
+    title: note.title,
+    excerpt: note.excerpt,
+    content_url: note.content_url,
+    tags: note.tags,
+    created_at: note.created_at,
+    word_count: note.word_count,
+    user_id: note.user_id,
+    subjects: Array.isArray(note.subjects)
+      ? note.subjects[0] || null
+      : note.subjects,
+    profiles: profiles || null,
+  }));
+
+  return transformedNotes;
+}
 
 export async function fetchNoteById(noteId: string): Promise<Note | null> {
   const supabase = await createClient();

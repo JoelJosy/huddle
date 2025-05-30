@@ -229,7 +229,6 @@ const renderMenuItem = (item: MenuItem) => {
             <NavigationMenuLink asChild key={subItem.title} className="w-80">
               <Link href={subItem.url} passHref>
                 {" "}
-                {/* Use Link here */}
                 <SubMenuLink item={subItem} />
               </Link>
             </NavigationMenuLink>
@@ -262,7 +261,6 @@ const renderMobileMenuItem = (item: MenuItem) => {
           {item.items.map((subItem) => (
             <Link key={subItem.title} href={subItem.url} passHref>
               {" "}
-              {/* Use Link here */}
               <SubMenuLink item={subItem} />
             </Link>
           ))}
