@@ -73,13 +73,13 @@ const renderMenuItem = (item: MenuItem) => {
     return (
       <NavigationMenuItem key={item.title}>
         <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
-        <NavigationMenuContent className="bg-popover text-popover-foreground min-w-[300px] rounded-md p-4 shadow-md">
+        <NavigationMenuContent className="bg-popover text-popover-foreground min-w-[300px] rounded-xl p-4 shadow-md">
           <div className="flex flex-col gap-2">
             {item.items.map((subItem) => (
               <NavigationMenuLink key={subItem.title} asChild>
                 <Link
                   href={subItem.url}
-                  className="hover:bg-muted hover:text-accent-foreground flex items-start gap-3 rounded-md p-3 transition-colors"
+                  className="hover:bg-muted hover:text-accent-foreground flex items-start gap-3 rounded-xl p-3 transition-colors"
                 >
                   <div className="text-muted-foreground pt-1">
                     {subItem.icon}
@@ -122,11 +122,25 @@ const renderMobileMenuItem = (item: MenuItem) => {
         <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
           {item.title}
         </AccordionTrigger>
-        <AccordionContent className="mt-2">
+        <AccordionContent className="mt-2 flex flex-col gap-2">
           {item.items.map((subItem) => (
-            <div key={subItem.title}>
-              <SubMenuLink item={subItem} />
-            </div>
+            <Link
+              key={subItem.title}
+              href={subItem.url}
+              className="hover:bg-muted hover:text-accent-foreground flex items-start gap-3 rounded-md p-3 transition-colors"
+            >
+              <div className="text-muted-foreground pt-1">{subItem.icon}</div>
+              <div className="space-y-1">
+                <p className="text-sm leading-none font-medium">
+                  {subItem.title}
+                </p>
+                {subItem.description && (
+                  <p className="text-muted-foreground text-sm leading-snug">
+                    {subItem.description}
+                  </p>
+                )}
+              </div>
+            </Link>
           ))}
         </AccordionContent>
       </AccordionItem>
