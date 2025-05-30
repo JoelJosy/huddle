@@ -54,6 +54,92 @@ interface NavbarProps {
   };
 }
 
+const SubMenuLink = ({ item }: { item: MenuItem }) => (
+  <>
+    <div className="text-foreground">{item.icon}</div>
+    <div>
+      <div className="text-sm font-semibold">{item.title}</div>
+      {item.description && (
+        <p className="text-muted-foreground text-sm leading-snug">
+          {item.description}
+        </p>
+      )}
+    </div>
+  </>
+);
+
+const renderMenuItem = (item: MenuItem) => {
+  if (item.items) {
+    return (
+      <NavigationMenuItem key={item.title}>
+        <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
+        <NavigationMenuContent className="bg-popover text-popover-foreground min-w-[300px] rounded-md p-4 shadow-md">
+          <div className="flex flex-col gap-2">
+            {item.items.map((subItem) => (
+              <NavigationMenuLink key={subItem.title} asChild>
+                <Link
+                  href={subItem.url}
+                  className="hover:bg-muted hover:text-accent-foreground flex items-start gap-3 rounded-md p-3 transition-colors"
+                >
+                  <div className="text-muted-foreground pt-1">
+                    {subItem.icon}
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm leading-none font-medium">
+                      {subItem.title}
+                    </p>
+                    {subItem.description && (
+                      <p className="text-muted-foreground text-sm leading-snug">
+                        {subItem.description}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              </NavigationMenuLink>
+            ))}
+          </div>
+        </NavigationMenuContent>
+      </NavigationMenuItem>
+    );
+  }
+
+  return (
+    <NavigationMenuItem key={item.title}>
+      <NavigationMenuLink
+        href={item.url}
+        className="group bg-background hover:bg-muted hover:text-accent-foreground inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors"
+      >
+        {item.title}
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+  );
+};
+
+const renderMobileMenuItem = (item: MenuItem) => {
+  if (item.items) {
+    return (
+      <AccordionItem key={item.title} value={item.title} className="border-b-0">
+        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
+          {item.title}
+        </AccordionTrigger>
+        <AccordionContent className="mt-2">
+          {item.items.map((subItem) => (
+            <div key={subItem.title}>
+              <SubMenuLink item={subItem} />
+            </div>
+          ))}
+        </AccordionContent>
+      </AccordionItem>
+    );
+  }
+
+  return (
+    <Link key={item.title} href={item.url} className="text-md font-semibold">
+      {item.title}
+    </Link>
+  );
+};
+
 const Navbar = async ({
   menu = [
     { title: "Home", url: "#" },
@@ -216,82 +302,6 @@ const Navbar = async ({
         </div>
       </div>
     </section>
-  );
-};
-
-const renderMenuItem = (item: MenuItem) => {
-  if (item.items) {
-    return (
-      <NavigationMenuItem key={item.title}>
-        <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
-        <NavigationMenuContent className="bg-popover text-popover-foreground">
-          {item.items.map((subItem) => (
-            <NavigationMenuLink asChild key={subItem.title} className="w-80">
-              <Link href={subItem.url} passHref>
-                {" "}
-                <SubMenuLink item={subItem} />
-              </Link>
-            </NavigationMenuLink>
-          ))}
-        </NavigationMenuContent>
-      </NavigationMenuItem>
-    );
-  }
-
-  return (
-    <NavigationMenuItem key={item.title}>
-      <NavigationMenuLink
-        href={item.url}
-        className="group bg-background hover:bg-muted hover:text-accent-foreground inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors"
-      >
-        {item.title}
-      </NavigationMenuLink>
-    </NavigationMenuItem>
-  );
-};
-
-const renderMobileMenuItem = (item: MenuItem) => {
-  if (item.items) {
-    return (
-      <AccordionItem key={item.title} value={item.title} className="border-b-0">
-        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
-          {item.title}
-        </AccordionTrigger>
-        <AccordionContent className="mt-2">
-          {item.items.map((subItem) => (
-            <Link key={subItem.title} href={subItem.url} passHref>
-              {" "}
-              <SubMenuLink item={subItem} />
-            </Link>
-          ))}
-        </AccordionContent>
-      </AccordionItem>
-    );
-  }
-
-  return (
-    <a key={item.title} href={item.url} className="text-md font-semibold">
-      {item.title}
-    </a>
-  );
-};
-
-const SubMenuLink = ({ item }: { item: MenuItem }) => {
-  return (
-    <a
-      className="hover:bg-muted hover:text-accent-foreground flex flex-row gap-4 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
-      href={item.url}
-    >
-      <div className="text-foreground">{item.icon}</div>
-      <div>
-        <div className="text-sm font-semibold">{item.title}</div>
-        {item.description && (
-          <p className="text-muted-foreground text-sm leading-snug">
-            {item.description}
-          </p>
-        )}
-      </div>
-    </a>
   );
 };
 
