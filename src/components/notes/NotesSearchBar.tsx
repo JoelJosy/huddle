@@ -3,7 +3,7 @@
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation"; // Import usePathname
 import { useCallback, useState } from "react";
 
 interface SearchBarProps {
@@ -12,6 +12,7 @@ interface SearchBarProps {
 
 export function NotesSearchBar({ defaultValue }: SearchBarProps) {
   const router = useRouter();
+  const pathname = usePathname(); // Get the current route
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState(defaultValue || "");
 
@@ -31,13 +32,13 @@ export function NotesSearchBar({ defaultValue }: SearchBarProps) {
   const handleSearch = (formData: FormData) => {
     const search = formData.get("search") as string;
     const queryString = createQueryString("search", search);
-    router.push(`/notes?${queryString}`);
+    router.push(`${pathname}?${queryString}`);
   };
 
   const handleClearSearch = () => {
     setSearchValue("");
     const queryString = createQueryString("search", "");
-    router.push(`/notes?${queryString}`);
+    router.push(`${pathname}?${queryString}`);
   };
 
   return (
