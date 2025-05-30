@@ -1,13 +1,16 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
 import type { Note } from "@/lib/notes";
 
 interface NoteCardProps {
   note: Note;
+  currentUserId?: string; // Add currentUserId prop
 }
 
-export function NoteCard({ note }: NoteCardProps) {
+export function NoteCard({ note, currentUserId }: NoteCardProps) {
   const getUserDisplayName = () => {
     // Priority: full_name > username > email prefix
     if (note.profiles?.full_name) {
@@ -20,6 +23,16 @@ export function NoteCard({ note }: NoteCardProps) {
       return note.profiles.email.split("@")[0];
     }
     return "Unknown User";
+  };
+
+  const isOwner = currentUserId === note.user_id;
+
+  const handleDelete = async () => {
+    // Implement delete functionality here
+    // Example:
+    // await deleteNote(note.id);
+    // Refresh the notes list after deletion
+    console.log(`Deleting note ${note.id}`);
   };
 
   return (
@@ -60,6 +73,20 @@ export function NoteCard({ note }: NoteCardProps) {
           <p>{new Date(note.created_at).toLocaleDateString()}</p>
           {note.word_count && <p>{note.word_count} words</p>}
         </div>
+
+        {/* Conditionally render edit/delete buttons */}
+        {isOwner && (
+          <div className="flex justify-end gap-2">
+            <Link href={`/notes/edit/${note.id}`}>
+              <Button variant="ghost" size="icon">
+                <Edit className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Button variant="ghost" size="icon" onClick={handleDelete}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

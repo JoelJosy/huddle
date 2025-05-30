@@ -1,35 +1,16 @@
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Suspense } from "react";
 import { NotesSearchBar } from "@/components/notes/NotesSearchBar";
-import { NoteCard } from "@/components/notes/NoteCard";
-import { EmptyState } from "@/components/notes/EmptyState";
 import { fetchPublicNotes } from "@/lib/notes";
 import Link from "next/link";
+import { NotesGrid } from "@/components/notes/NotesGrid";
 
 interface NotesPageProps {
   searchParams: {
     search?: string;
   };
-}
-
-function NotesGrid({
-  notes,
-}: {
-  notes: Awaited<ReturnType<typeof fetchPublicNotes>>;
-}) {
-  if (notes.length === 0) {
-    return <EmptyState />;
-  }
-
-  return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {notes.map((note) => (
-        <NoteCard key={note.id} note={note} />
-      ))}
-    </div>
-  );
 }
 
 async function NotesContent({ searchQuery }: { searchQuery?: string }) {
@@ -61,11 +42,11 @@ export default async function NotesPage({ searchParams }: NotesPageProps) {
           Community Knowledge
         </Badge>
         <h1 className="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl">
-          Browse Notes
+          Public Notes
         </h1>
         <p className="text-muted-foreground mx-auto mb-8 max-w-2xl">
-          Discover and explore notes shared by our community. Find study
-          materials, insights, and knowledge across various subjects.
+          Explore notes shared by our community. You can search for specific
+          topics, subjects, or tags to find relevant information quickly.
         </p>
 
         <div className="flex flex-col items-center gap-4">

@@ -3,8 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 import { NotesSearchBar } from "@/components/notes/NotesSearchBar";
-import { NoteCard } from "@/components/notes/NoteCard";
-import { EmptyState } from "@/components/notes/EmptyState";
+import { NotesGrid } from "@/components/notes/NotesGrid";
 import { fetchUserNotes } from "@/lib/notes";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
@@ -14,6 +13,12 @@ interface NotesPageProps {
     search?: string;
   };
 }
+
+interface NotesContentProps {
+  searchQuery?: string;
+  currentUserId: string | undefined;
+}
+
 async function getCurrentUserId() {
   const supabase = await createClient();
   const {
@@ -22,28 +27,8 @@ async function getCurrentUserId() {
   return user?.id;
 }
 
-function NotesGrid({
-  notes,
-}: {
-  notes: Awaited<ReturnType<typeof fetchUserNotes>>;
-}) {
-  if (notes.length === 0) {
-    return <EmptyState />;
-  }
-
-  return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {notes.map((note) => (
-        <NoteCard key={note.id} note={note} />
-      ))}
-    </div>
-  );
-}
-
-async function NotesContent({ searchQuery }: { searchQuery?: string }) {
-  const userId = await getCurrentUserId();
-
-  if (!userId) {
+async function NotesContent({ searchQuery, currentUserId }: NotesContentProps) {
+  if (!currentUserId) {
     return (
       <div className="mb-8 text-center">
         <p className="text-muted-foreground">
@@ -53,7 +38,7 @@ async function NotesContent({ searchQuery }: { searchQuery?: string }) {
     );
   }
 
-  const notes = await fetchUserNotes(userId, searchQuery);
+  const notes = await fetchUserNotes(currentUserId, searchQuery);
 
   return (
     <>
@@ -61,10 +46,10 @@ async function NotesContent({ searchQuery }: { searchQuery?: string }) {
         <p className="text-muted-foreground">
           {searchQuery
             ? `Found ${notes.length} notes for "${searchQuery}"`
-            : `${notes.length} public notes available`}
+            : `Found ${notes.length} notes`}
         </p>
       </div>
-      <NotesGrid notes={notes} />
+      <NotesGrid notes={notes} currentUserId={currentUserId} />{" "}
     </>
   );
 }
@@ -72,6 +57,7 @@ async function NotesContent({ searchQuery }: { searchQuery?: string }) {
 export default async function MyNotesPage({ searchParams }: NotesPageProps) {
   const resolvedSearchParams = await searchParams;
   const searchQuery = resolvedSearchParams.search;
+  const userId = await getCurrentUserId();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -108,7 +94,7 @@ export default async function MyNotesPage({ searchParams }: NotesPageProps) {
           </div>
         }
       >
-        <NotesContent searchQuery={searchQuery} />
+        <NotesContent searchQuery={searchQuery} currentUserId={userId} />
       </Suspense>
     </div>
   );
