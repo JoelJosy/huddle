@@ -109,29 +109,11 @@ export async function fetchUserNotes(
 ): Promise<Note[]> {
   const supabase = await createClient();
 
-  let query = supabase
-    .from("notes")
-    .select(
-      `
-      id,
-      title,
-      excerpt,
-      content_url,
-      tags,
-      created_at,
-      word_count,
-      user_id,
-      subjects(name)
-    `,
-    )
-    .eq("user_id", userId) // Filter by user ID
-    .order("created_at", { ascending: false });
-
-  if (searchQuery) {
-    query = query.ilike("title", `%${searchQuery}%`);
-  }
-
-  const { data: notes, error } = await query;
+  // Call the RPC function
+  const { data: notes, error } = await supabase.rpc("search_user_term", {
+    p_user_id: userId,
+    search_term: searchQuery || "",
+  });
 
   if (error) {
     console.error("Error fetching user notes:", error);
@@ -143,7 +125,7 @@ export async function fetchUserNotes(
   }
 
   // Fetch profiles for the user
-  const { data: profiles, error: profilesError } = await supabase
+  const { data: profile, error: profilesError } = await supabase
     .from("profiles")
     .select("id, full_name, email, username")
     .eq("id", userId)
@@ -153,7 +135,11 @@ export async function fetchUserNotes(
     console.error("Error fetching profile:", profilesError);
   }
 
-  const transformedNotes: Note[] = notes.map((note) => ({
+  // Create a map for quick profile lookup
+  const profilesMap = new Map(profile ? [[profile.id, profile]] : []);
+
+  // Transform the data to match our interface
+  const transformedNotes: Note[] = notes.map((note: any) => ({
     id: note.id,
     title: note.title,
     excerpt: note.excerpt,
@@ -162,10 +148,8 @@ export async function fetchUserNotes(
     created_at: note.created_at,
     word_count: note.word_count,
     user_id: note.user_id,
-    subjects: Array.isArray(note.subjects)
-      ? note.subjects[0] || null
-      : note.subjects,
-    profiles: profiles || null,
+    subjects: note.subject_name ? { name: note.subject_name } : null,
+    profiles: profilesMap.get(note.user_id) || null,
   }));
 
   return transformedNotes;
