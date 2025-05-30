@@ -114,8 +114,6 @@ export async function fetchNoteById(noteId: string): Promise<Note | null> {
     return null;
   }
 
-  console.log("Fetching note with ID:", noteId); // Debug log
-
   try {
     // Get the note with its subject
     const { data: note, error } = await supabase

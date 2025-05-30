@@ -20,8 +20,6 @@ async function NoteContent({ noteId }: { noteId: string }) {
     notFound();
   }
 
-  console.log("Fetching note with ID:", noteId); // Debug log
-
   const note = await fetchNoteById(noteId);
 
   if (!note) {
@@ -163,9 +161,6 @@ async function NoteContent({ noteId }: { noteId: string }) {
 export default async function NotePage(props: NotePageProps) {
   const params = await props.params;
   const noteId = params.noteId; // Changed from params.id to params.noteId
-
-  console.log("Route params:", params); // Debug log
-  console.log("Note ID from params:", noteId); // Debug log
 
   // Add validation here too
   if (!noteId || noteId === "undefined") {
