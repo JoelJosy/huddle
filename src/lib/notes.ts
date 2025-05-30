@@ -22,36 +22,53 @@ export interface Note {
 export async function fetchPublicNotes(searchQuery?: string): Promise<Note[]> {
   const supabase = await createClient();
 
-  // First, get notes with subjects only
-  let query = supabase
-    .from("notes")
-    .select(
-      `
-      id,
-      title,
-      excerpt,
-      content_url,
-      tags,
-      created_at,
-      word_count,
-      user_id,
-      subjects(name)
-    `,
-    )
-    .eq("visibility", "public")
-    .order("created_at", { ascending: false });
+  let notes;
+  let error;
 
   if (searchQuery) {
-    query = query.or(
-      `title.ilike.%${searchQuery}%,subjects.name.ilike.%${searchQuery}%`,
-    );
-  }
+    // Use the RPC function for search
+    const { data, error: rpcError } = await supabase.rpc("search_notes", {
+      search_term: searchQuery,
+    });
 
-  const { data: notes, error } = await query;
+    if (rpcError) {
+      console.error("Error fetching notes with search:", rpcError);
+      return [];
+    }
 
-  if (error) {
-    console.error("Error fetching notes:", error);
-    return [];
+    // Transform RPC results to match expected structure
+    notes =
+      data?.map((note: any) => ({
+        ...note,
+        subjects: note.subject_name ? { name: note.subject_name } : null,
+      })) || [];
+  } else {
+    // Use the original query for non-search requests
+    const { data, error: queryError } = await supabase
+      .from("notes")
+      .select(
+        `
+        id,
+        title,
+        excerpt,
+        content_url,
+        tags,
+        created_at,
+        word_count,
+        user_id,
+        subjects(name)
+      `,
+      )
+      .eq("visibility", "public")
+      .order("created_at", { ascending: false });
+
+    notes = data;
+    error = queryError;
+
+    if (error) {
+      console.error("Error fetching notes:", error);
+      return [];
+    }
   }
 
   if (!notes || notes.length === 0) {
@@ -59,7 +76,7 @@ export async function fetchPublicNotes(searchQuery?: string): Promise<Note[]> {
   }
 
   // Get unique user IDs from notes
-  const userIds = [...new Set(notes.map((note) => note.user_id))];
+  const userIds = [...new Set(notes.map((note: any) => note.user_id))];
 
   // Fetch profiles separately
   const { data: profiles, error: profilesError } = await supabase
@@ -75,7 +92,7 @@ export async function fetchPublicNotes(searchQuery?: string): Promise<Note[]> {
   const profilesMap = new Map(profiles?.map((p) => [p.id, p]) || []);
 
   // Transform the data to match our interface
-  const transformedNotes: Note[] = notes.map((note) => ({
+  const transformedNotes: Note[] = notes.map((note: any) => ({
     ...note,
     subjects: Array.isArray(note.subjects)
       ? note.subjects[0] || null
