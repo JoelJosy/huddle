@@ -129,9 +129,9 @@ export async function fetchUserNotes(
     .from("profiles")
     .select("id, full_name, email, username")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
-  if (profilesError) {
+  if (profilesError && (profilesError as any).status !== 406) {
     console.error("Error fetching profile:", profilesError);
   }
 
