@@ -6,6 +6,7 @@ import { NotesSearchBar } from "@/components/notes/NotesSearchBar";
 import { fetchPublicNotes } from "@/lib/notes";
 import Link from "next/link";
 import { NotesGrid } from "@/components/notes/NotesGrid";
+import getCurrentUserId from "@/lib/accountActions";
 
 interface NotesPageProps {
   searchParams: {
@@ -13,7 +14,22 @@ interface NotesPageProps {
   };
 }
 
-async function NotesContent({ searchQuery }: { searchQuery?: string }) {
+interface NotesContentProps {
+  searchQuery?: string;
+  currentUserId: string | undefined;
+}
+
+async function NotesContent({ searchQuery, currentUserId }: NotesContentProps) {
+  if (!currentUserId) {
+    return (
+      <div className="mb-8 text-center">
+        <p className="text-muted-foreground">
+          Please log in to view your notes.
+        </p>
+      </div>
+    );
+  }
+
   const notes = await fetchPublicNotes(searchQuery);
 
   return (
@@ -25,7 +41,7 @@ async function NotesContent({ searchQuery }: { searchQuery?: string }) {
             : `${notes.length} public notes available`}
         </p>
       </div>
-      <NotesGrid notes={notes} />
+      <NotesGrid notes={notes} currentUserId={currentUserId} />
     </>
   );
 }
@@ -33,6 +49,7 @@ async function NotesContent({ searchQuery }: { searchQuery?: string }) {
 export default async function NotesPage({ searchParams }: NotesPageProps) {
   const resolvedSearchParams = await searchParams;
   const searchQuery = resolvedSearchParams.search;
+  const userId = await getCurrentUserId();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -69,7 +86,7 @@ export default async function NotesPage({ searchParams }: NotesPageProps) {
           </div>
         }
       >
-        <NotesContent searchQuery={searchQuery} />
+        <NotesContent searchQuery={searchQuery} currentUserId={userId} />
       </Suspense>
     </div>
   );

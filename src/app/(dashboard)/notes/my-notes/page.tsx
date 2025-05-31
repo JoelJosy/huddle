@@ -7,6 +7,7 @@ import { NotesGrid } from "@/components/notes/NotesGrid";
 import { fetchUserNotes } from "@/lib/notes";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
+import getCurrentUserId from "@/lib/accountActions";
 
 interface NotesPageProps {
   searchParams: {
@@ -17,14 +18,6 @@ interface NotesPageProps {
 interface NotesContentProps {
   searchQuery?: string;
   currentUserId: string | undefined;
-}
-
-async function getCurrentUserId() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user?.id;
 }
 
 async function NotesContent({ searchQuery, currentUserId }: NotesContentProps) {
