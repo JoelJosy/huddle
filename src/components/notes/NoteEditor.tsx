@@ -61,17 +61,11 @@ const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
             "prose prose-sm m-0 p-4 focus:outline-none max-w-none min-h-full",
         },
       },
-      onCreate: ({ editor }) => {
-        // Editor is ready
-        console.log("Editor created and ready");
-        onReady?.();
-      },
     });
 
     // Handle initial content loading
     useEffect(() => {
       if (editor && initialContent) {
-        console.log("Setting initial content in editor:", initialContent);
         editor.commands.setContent(initialContent);
       }
     }, [editor, initialContent]);

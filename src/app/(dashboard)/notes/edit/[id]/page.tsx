@@ -57,7 +57,6 @@ export default function EditNotePage() {
 
         // Fetch and load note content
         const content = await fetchNoteContent(note.content_url);
-        console.log("Fetched content:", content);
 
         if (content) {
           setNoteContent(content);
@@ -73,10 +72,6 @@ export default function EditNotePage() {
 
     loadNote();
   }, [noteId]);
-
-  const handleEditorReady = () => {
-    console.log("Editor is ready");
-  };
 
   const addTag = (e?: React.MouseEvent) => {
     if (e) {
@@ -330,11 +325,7 @@ export default function EditNotePage() {
               </Card>
             </div>
 
-            <NoteEditor
-              ref={editorRef}
-              initialContent={noteContent}
-              onReady={handleEditorReady}
-            />
+            <NoteEditor ref={editorRef} initialContent={noteContent} />
           </div>
         </form>
       </div>
