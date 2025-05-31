@@ -23,9 +23,6 @@ export default function CreateNotePage() {
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  // Remove: const [wordCount, setWordCount] = useState(0);
-
-  // Remove the entire useEffect block
 
   const addTag = (e?: React.MouseEvent) => {
     if (e) {
