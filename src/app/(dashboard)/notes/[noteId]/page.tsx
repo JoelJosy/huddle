@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, User, FileText } from "lucide-react";
+import { ArrowLeft, Calendar, User, FileText, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,9 +8,10 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import NoteViewer from "@/components/notes/NoteViewer";
 import { fetchNoteById, fetchNoteContent } from "@/lib/notes";
+import { createClient } from "@/utils/supabase/server";
 
 interface NotePageProps {
-  params: Promise<{ noteId: string }>; // Changed from 'id' to 'noteId'
+  params: Promise<{ noteId: string }>;
 }
 
 async function NoteContent({ noteId }: { noteId: string }) {
@@ -26,6 +27,13 @@ async function NoteContent({ noteId }: { noteId: string }) {
     console.error("Note not found for ID:", noteId);
     notFound();
   }
+
+  // Get current user to check ownership
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isOwner = user && user.id === note.user_id;
 
   // Fetch the actual content from storage
   const content = await fetchNoteContent(note.content_url);
@@ -48,12 +56,22 @@ async function NoteContent({ noteId }: { noteId: string }) {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <Button variant="ghost" asChild className="mb-4">
-            <Link href="/notes">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Notes
-            </Link>
-          </Button>
+          <div className="mb-4 flex items-center justify-between">
+            <Button variant="ghost" asChild>
+              <Link href="/notes">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Notes
+              </Link>
+            </Button>
+            {isOwner && (
+              <Button asChild>
+                <Link href={`/notes/edit/${noteId}`}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Note
+                </Link>
+              </Button>
+            )}
+          </div>
           <h1 className="mb-2 text-3xl font-bold">{note.title}</h1>
           <p className="text-muted-foreground">
             {note.excerpt || "No excerpt available"}
@@ -146,6 +164,27 @@ async function NoteContent({ noteId }: { noteId: string }) {
                     <p className="text-sm">{note.word_count} words</p>
                   </div>
                 )}
+
+                {/* Owner Actions */}
+                {isOwner && (
+                  <>
+                    <Separator />
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-medium">Actions</h3>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        asChild
+                      >
+                        <Link href={`/notes/edit/${noteId}`}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit Note
+                        </Link>
+                      </Button>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -160,7 +199,7 @@ async function NoteContent({ noteId }: { noteId: string }) {
 
 export default async function NotePage(props: NotePageProps) {
   const params = await props.params;
-  const noteId = params.noteId; // Changed from params.id to params.noteId
+  const noteId = params.noteId;
 
   // Add validation here too
   if (!noteId || noteId === "undefined") {
