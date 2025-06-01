@@ -44,3 +44,49 @@ export async function createStudyGroup(formData: FormData) {
 
   return { groupId: data.id };
 }
+// ...existing code...
+
+export async function deleteStudyGroup(groupId: string) {
+  const supabase = await createClient();
+  const currentUserId = await getCurrentUserId();
+
+  if (!currentUserId) {
+    throw new Error("You must be logged in to delete a group");
+  }
+
+  try {
+    // First verify the user owns the group
+    const { data: group, error: fetchError } = await supabase
+      .from("study_groups")
+      .select("owner_id")
+      .eq("id", groupId)
+      .single();
+
+    if (fetchError) {
+      throw new Error("Group not found");
+    }
+
+    if (group.owner_id !== currentUserId) {
+      throw new Error("You can only delete groups you own");
+    }
+
+    // Delete the group
+    const { error: deleteError } = await supabase
+      .from("study_groups")
+      .delete()
+      .eq("id", groupId);
+
+    if (deleteError) {
+      console.error("Error deleting group:", deleteError);
+      throw new Error("Failed to delete group");
+    }
+
+    // Revalidate the groups page
+    revalidatePath("/groups");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting group:", error);
+    throw error;
+  }
+}

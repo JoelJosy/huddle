@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,9 +10,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { StudyGroup } from "@/lib/groups";
-import { Users, Calendar, User } from "lucide-react";
+import { Users, Calendar, User, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
+import { deleteStudyGroup } from "@/lib/groupActions";
 
 interface GroupCardProps {
   group: StudyGroup;
@@ -19,16 +35,72 @@ interface GroupCardProps {
 
 export function GroupCard({ group, currentUserId }: GroupCardProps) {
   const isOwner = group.owner_id === currentUserId;
+  const [isPending, startTransition] = useTransition();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDelete = () => {
+    startTransition(async () => {
+      try {
+        await deleteStudyGroup(group.id);
+        toast.success("Group deleted successfully!");
+        setShowDeleteDialog(false);
+      } catch (error) {
+        console.error("Error deleting group:", error);
+        toast.error("Failed to delete group. Please try again.");
+      }
+    });
+  };
 
   return (
     <Card className="flex h-full flex-col transition-shadow hover:shadow-md">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <CardTitle className="line-clamp-2 text-lg">{group.name}</CardTitle>
-          {group.subject_name && (
-            <Badge variant="outline" className="ml-2 shrink-0">
-              {group.subject_name}
-            </Badge>
+          {isOwner && (
+            <AlertDialog
+              open={showDeleteDialog}
+              onOpenChange={setShowDeleteDialog}
+            >
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-destructive h-8 w-8 p-0"
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Study Group</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete "{group.name}"? This action
+                    cannot be undone. All group data and member associations
+                    will be permanently removed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isPending}>
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    disabled={isPending}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Delete Group
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
         {group.description && (
