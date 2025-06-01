@@ -6,6 +6,7 @@ import { GroupsSearchBar } from "@/components/groups/GroupsSearchBar";
 import { fetchPublicGroups } from "@/lib/groups";
 import Link from "next/link";
 import { GroupsGrid } from "@/components/groups/GroupsGrid";
+import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
 import getCurrentUserId from "@/lib/accountActions";
 
 interface GroupsPageProps {
@@ -72,9 +73,7 @@ export default async function GroupsPage({ searchParams }: GroupsPageProps) {
 
         <div className="flex flex-col items-center gap-4">
           <GroupsSearchBar defaultValue={searchQuery} />
-          <Button asChild variant={"default"}>
-            <Link href="/groups/create">Create Group</Link>
-          </Button>
+          <CreateGroupDialog />
         </div>
       </div>
 

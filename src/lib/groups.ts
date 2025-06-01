@@ -6,7 +6,6 @@ export interface StudyGroup {
   description: string | null;
   member_count: number;
   created_at: string;
-  subject_name: string | null;
   owner_name: string | null;
   owner_id?: string;
 }
