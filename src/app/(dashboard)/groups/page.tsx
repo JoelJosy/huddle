@@ -1,10 +1,8 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Suspense } from "react";
 import { GroupsSearchBar } from "@/components/groups/GroupsSearchBar";
 import { fetchPublicGroups } from "@/lib/groups";
-import Link from "next/link";
 import { GroupsGrid } from "@/components/groups/GroupsGrid";
 import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
 import getCurrentUserId from "@/lib/accountActions";

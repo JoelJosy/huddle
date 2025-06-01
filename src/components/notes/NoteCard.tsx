@@ -1,17 +1,35 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Edit, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Edit, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Note } from "@/lib/notes";
 import { deleteNote } from "@/lib/noteActions";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 interface NoteCardProps {
   note: Note;
-  currentUserId?: string; // Add currentUserId prop
+  currentUserId?: string;
 }
 
 export function NoteCard({ note, currentUserId }: NoteCardProps) {
+  const [isPending, startTransition] = useTransition();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   const getUserDisplayName = () => {
     // Priority: full_name > username > email prefix
     if (note.profiles?.full_name) {
@@ -24,6 +42,19 @@ export function NoteCard({ note, currentUserId }: NoteCardProps) {
       return note.profiles.email.split("@")[0];
     }
     return "Unknown User";
+  };
+
+  const handleDelete = () => {
+    startTransition(async () => {
+      try {
+        await deleteNote(note.id);
+        toast.success("Note deleted successfully!");
+        setShowDeleteDialog(false);
+      } catch (error) {
+        console.error("Error deleting note:", error);
+        toast.error("Failed to delete note. Please try again.");
+      }
+    });
   };
 
   const isOwner = currentUserId === note.user_id;
@@ -71,17 +102,56 @@ export function NoteCard({ note, currentUserId }: NoteCardProps) {
         {isOwner && (
           <div className="flex justify-end gap-2">
             <Link href={`/notes/edit/${note.id}`}>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" disabled={isPending}>
                 <Edit className="h-4 w-4" />
               </Button>
             </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => deleteNote(note.id)}
+
+            <AlertDialog
+              open={showDeleteDialog}
+              onOpenChange={setShowDeleteDialog}
             >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  disabled={isPending}
+                  className="hover:text-destructive"
+                >
+                  {isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Are you sure you want to delete {note.title}?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. The note and its content will
+                    be permanently removed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isPending}>
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    disabled={isPending}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Delete Note
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
       </CardContent>
