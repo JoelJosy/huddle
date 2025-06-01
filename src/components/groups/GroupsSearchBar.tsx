@@ -18,8 +18,8 @@ export function GroupsSearchBar({ defaultValue = "" }: GroupsSearchBarProps) {
   const handleSearch = (value: string) => {
     const params = new URLSearchParams(searchParams);
 
-    if (value) {
-      params.set("search", value);
+    if (value && value.trim()) {
+      params.set("search", value.trim());
     } else {
       params.delete("search");
     }
@@ -34,6 +34,11 @@ export function GroupsSearchBar({ defaultValue = "" }: GroupsSearchBarProps) {
     handleSearch(query);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="relative w-full max-w-md">
       <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -41,7 +46,7 @@ export function GroupsSearchBar({ defaultValue = "" }: GroupsSearchBarProps) {
         type="text"
         placeholder="Search groups by name, subject, or description..."
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={handleInputChange}
         className="pl-10"
         disabled={isPending}
       />
