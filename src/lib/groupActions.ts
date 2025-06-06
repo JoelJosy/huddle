@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import getCurrentUserId from "@/lib/accountActions";
+import type { StudyGroup } from "@/lib/groups";
 
 export async function createStudyGroup(formData: FormData) {
   const supabase = await createClient();
@@ -44,7 +45,6 @@ export async function createStudyGroup(formData: FormData) {
 
   return { groupId: data.id };
 }
-// ...existing code...
 
 export async function deleteStudyGroup(groupId: string) {
   const supabase = await createClient();
@@ -89,4 +89,39 @@ export async function deleteStudyGroup(groupId: string) {
     console.error("Error deleting group:", error);
     throw error;
   }
+}
+
+export async function fetchGroupDetails(
+  groupId: string,
+): Promise<StudyGroup | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("study_groups")
+    .select(
+      `
+      id,
+      name,
+      description,
+      owner_id,
+      is_public,
+      max_members,
+      member_count,
+      created_at,
+      profiles:owner_id(full_name, username)
+    `,
+    )
+    .eq("id", groupId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching group details:", error);
+    return null;
+  }
+
+  return {
+    ...data,
+    owner_name:
+      data.profiles?.[0]?.full_name || data.profiles?.[0]?.username || null,
+  };
 }
