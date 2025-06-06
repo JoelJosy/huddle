@@ -15,7 +15,8 @@ export async function createStudyGroup(formData: FormData) {
 
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
-  const maxMembers = parseInt(formData.get("maxMembers") as string) || 20;
+  const maxMembers =
+    Number.parseInt(formData.get("maxMembers") as string) || 20;
   const isPublic = formData.has("isPublic");
 
   if (!name || name.trim().length === 0) {
@@ -38,6 +39,18 @@ export async function createStudyGroup(formData: FormData) {
   if (error) {
     console.error("Error creating group:", error);
     throw new Error("Failed to create group");
+  }
+
+  // Add the creator as a member with owner role
+  const { error: memberError } = await supabase.from("group_members").insert({
+    group_id: data.id,
+    user_id: currentUserId,
+    role: "owner",
+  });
+
+  if (memberError) {
+    console.error("Error adding owner as member:", memberError);
+    // We don't throw here as the group was created successfully
   }
 
   // Revalidate the groups page
