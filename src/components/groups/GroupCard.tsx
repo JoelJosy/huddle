@@ -140,9 +140,7 @@ export function GroupCard({ group, currentUserId }: GroupCardProps) {
       <CardFooter className="pt-0">
         <div className="flex w-full gap-2">
           <Button asChild className="flex-1" variant="default">
-            <Link href={`/groups/${group.id}`}>
-              {isOwner ? "Manage" : "Join Group"}
-            </Link>
+            <Link href={`/groups/${group.id}`}>Enter Group</Link>
           </Button>
         </div>
       </CardFooter>
