@@ -166,7 +166,7 @@ export async function fetchGroupMembers(groupId: string) {
   return data || [];
 }
 
-export async function joinGroup(groupId: string) {
+export async function joinStudyGroup(groupId: string) {
   const supabase = await createClient();
   const currentUserId = await getCurrentUserId();
 
@@ -230,7 +230,7 @@ export async function joinGroup(groupId: string) {
   return { success: true };
 }
 
-export async function leaveGroup(groupId: string) {
+export async function leaveStudyGroup(groupId: string) {
   const supabase = await createClient();
   const currentUserId = await getCurrentUserId();
 
