@@ -159,19 +159,19 @@ const Navbar = async ({
     { title: "Home", url: "#" },
     {
       title: "Groups",
-      url: "#",
+      url: "/groups",
       items: [
         {
           title: "Create Group",
           description: "Start a new group to collaborate with others",
           icon: <Book className="size-5 shrink-0" />,
-          url: "#",
+          url: "/groups",
         },
         {
           title: "View Groups",
           description: "Explore existing groups and join discussions",
           icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
+          url: "/groups",
         },
         {
           title: "Rules & Guidelines",
