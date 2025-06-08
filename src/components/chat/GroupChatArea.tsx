@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { SendHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchMessages, sendMessage } from "@/lib/chatActions";
 import { createClient } from "@/utils/supabase/client";
@@ -25,6 +25,7 @@ interface Message {
   profile: {
     full_name?: string;
     username?: string;
+    avatar_url?: string;
   };
 }
 
@@ -184,6 +185,14 @@ export default function GroupChatArea({
                 {/* Others Avatar */}
                 {message.user_id !== currentUserId && (
                   <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={message.profile?.avatar_url}
+                      alt={
+                        message.profile?.full_name ||
+                        message.profile?.username ||
+                        "User"
+                      }
+                    />
                     <AvatarFallback>
                       {message.profile?.full_name?.[0] ||
                         message.profile?.username?.[0] ||
@@ -228,6 +237,14 @@ export default function GroupChatArea({
                 {/* User avatar */}
                 {message.user_id === currentUserId && (
                   <Avatar className="order-2 h-8 w-8">
+                    <AvatarImage
+                      src={message.profile?.avatar_url}
+                      alt={
+                        message.profile?.full_name ||
+                        message.profile?.username ||
+                        "User"
+                      }
+                    />
                     <AvatarFallback>
                       {message.profile?.full_name?.[0] ||
                         message.profile?.username?.[0] ||

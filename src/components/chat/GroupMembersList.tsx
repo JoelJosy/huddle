@@ -24,7 +24,14 @@ export default function GroupMembersList({
               className="hover:bg-accent flex items-center gap-3 rounded-md p-2"
             >
               <Avatar>
-                <AvatarImage src={member.profile?.avatar_url} />
+                <AvatarImage
+                  src={member.profile?.avatar_url}
+                  alt={
+                    member.profile?.full_name ||
+                    member.profile?.username ||
+                    "User"
+                  }
+                />
                 <AvatarFallback>
                   {member.profile?.full_name?.[0] ||
                     member.profile?.username?.[0] ||

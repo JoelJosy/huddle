@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { cacheUserAvatar } from "@/lib/avatarActions";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -38,6 +39,16 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // If user is logged in, check if we need to cache their avatar
+  if (user) {
+    const avatarUrl = user.user_metadata?.avatar_url;
+    if (avatarUrl) {
+      // We don't await this to avoid blocking the middleware
+      // It will run in the background
+      cacheUserAvatar(user.id, avatarUrl).catch(console.error);
+    }
+  }
 
   if (
     !user &&

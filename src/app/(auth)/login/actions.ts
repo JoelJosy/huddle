@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/server";
+import { cacheUserAvatar } from "@/lib/avatarActions";
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -13,10 +14,19 @@ export async function login(formData: FormData) {
     password: formData.get("password") as string,
   };
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  const { data: authData, error } =
+    await supabase.auth.signInWithPassword(data);
 
   if (error) {
     redirect("/error");
+  }
+
+  // Cache avatar if available
+  if (authData?.user) {
+    const avatarUrl = authData.user.user_metadata?.avatar_url;
+    if (avatarUrl) {
+      await cacheUserAvatar(authData.user.id, avatarUrl);
+    }
   }
 
   revalidatePath("/", "layout");
@@ -40,10 +50,18 @@ export async function signup(formData: FormData) {
     },
   };
 
-  const { error } = await supabase.auth.signUp(data);
+  const { data: authData, error } = await supabase.auth.signUp(data);
 
   if (error) {
     redirect("/error");
+  }
+
+  // For new signups, there might not be an avatar yet, but we check just in case
+  if (authData?.user) {
+    const avatarUrl = authData.user.user_metadata?.avatar_url;
+    if (avatarUrl) {
+      await cacheUserAvatar(authData.user.id, avatarUrl);
+    }
   }
 
   revalidatePath("/", "layout");

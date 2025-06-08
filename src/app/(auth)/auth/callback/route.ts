@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { cacheUserAvatar } from "@/lib/avatarActions";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -8,8 +9,15 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error && data?.user) {
+      // Cache the user's avatar URL if available
+      const avatarUrl = data.user.user_metadata?.avatar_url;
+      if (avatarUrl && data.user.id) {
+        await cacheUserAvatar(data.user.id, avatarUrl);
+      }
+
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
