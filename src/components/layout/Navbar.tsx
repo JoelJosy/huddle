@@ -2,7 +2,6 @@ import type React from "react";
 import Link from "next/link";
 import {
   BookOpen,
-  Boxes,
   Menu,
   FileText,
   Users,
@@ -10,6 +9,7 @@ import {
   Settings,
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
+import Image from "next/image";
 
 import {
   Accordion,
@@ -236,7 +236,20 @@ const Navbar = async ({
           <div className="flex items-center gap-6">
             {/* Logo */}
             <Link href={"/dashboard"} className="flex items-center gap-2">
-              <Boxes className="size-8" />
+              <Image
+                src="/logo_full.svg"
+                alt="Huddle Logo"
+                width={110}
+                height={80}
+                className="h-7 w-auto dark:hidden"
+              />
+              <Image
+                src="/logo_full_dark.svg"
+                alt="Huddle Logo"
+                width={110}
+                height={80}
+                className="hidden h-8 w-auto dark:block"
+              />
             </Link>
             <div className="flex items-center">
               <NavigationMenu>
@@ -274,7 +287,20 @@ const Navbar = async ({
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href={"/dashboard"} className="flex items-center gap-2">
-              <Boxes className="size-8" />
+              <Image
+                src="/logo_full.svg"
+                alt="Huddle Logo"
+                width={100}
+                height={50}
+                className="h-7 w-auto dark:hidden"
+              />
+              <Image
+                src="/logo_full_dark.svg"
+                alt="Huddle Logo"
+                width={110}
+                height={80}
+                className="hidden h-8 w-auto dark:block"
+              />
             </Link>
             <Sheet>
               <SheetTrigger asChild>
@@ -289,7 +315,20 @@ const Navbar = async ({
                       href={"/dashboard"}
                       className="flex items-center gap-2"
                     >
-                      <Boxes className="size-8" />
+                      <Image
+                        src="/logo_full.svg"
+                        alt="Huddle Logo"
+                        width={100}
+                        height={50}
+                        className="h-7 w-auto dark:hidden"
+                      />
+                      <Image
+                        src="/logo_full_dark.svg"
+                        alt="Huddle Logo"
+                        width={110}
+                        height={80}
+                        className="hidden h-8 w-auto dark:block"
+                      />
                     </Link>
                   </SheetTitle>
                 </SheetHeader>

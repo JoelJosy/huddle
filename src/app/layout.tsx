@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
-import { Navbar } from "@/components/layout/Navbar";
 
 export const metadata: Metadata = {
   title: "Huddle",
-  description: "AI powered collaborative study platform ",
+  description: "AI powered collaborative study platform",
+  icons: {
+    icon: "/logo1.svg",
+    shortcut: "/logo1.svg",
+    apple: "/logo1.svg",
+  },
 };
 
 export default function RootLayout({

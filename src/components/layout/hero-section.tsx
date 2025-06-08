@@ -1,5 +1,4 @@
 "use client";
-import { Logo } from "@/components/logo";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +30,20 @@ export default function HeroSection() {
                   aria-label="home"
                   className="flex items-center space-x-2"
                 >
-                  <Logo />
+                  <Image
+                    src="/logo_full.svg"
+                    alt="Huddle Logo"
+                    width={110}
+                    height={80}
+                    className="dark:hidden"
+                  />
+                  <Image
+                    src="/logo_full_dark.svg"
+                    alt="Huddle Logo"
+                    width={110}
+                    height={80}
+                    className="hidden dark:block"
+                  />
                 </Link>
 
                 <button
