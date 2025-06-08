@@ -16,6 +16,7 @@ export interface Note {
     full_name: string;
     email: string;
     username?: string;
+    avatar_url?: string;
   } | null;
 }
 
@@ -81,7 +82,7 @@ export async function fetchPublicNotes(searchQuery?: string): Promise<Note[]> {
   // Fetch profiles separately
   const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
-    .select("id, full_name, email, username")
+    .select("id, full_name, email, username, avatar_url")
     .in("id", userIds);
 
   if (profilesError) {
@@ -127,7 +128,7 @@ export async function fetchUserNotes(
   // Fetch profiles for the user
   const { data: profile, error: profilesError } = await supabase
     .from("profiles")
-    .select("id, full_name, email, username")
+    .select("id, full_name, email, username, avatar_url")
     .eq("id", userId)
     .maybeSingle();
 
@@ -198,7 +199,7 @@ export async function fetchNoteById(noteId: string): Promise<Note | null> {
     // Fetch the profile for this note's author
     const { data: profile } = await supabase
       .from("profiles")
-      .select("id, full_name, email, username")
+      .select("id, full_name, email, username, avatar_url")
       .eq("id", note.user_id)
       .single();
 

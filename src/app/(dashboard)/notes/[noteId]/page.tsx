@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, User, FileText, Edit } from "lucide-react";
+import { ArrowLeft, Calendar, FileText, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import NoteViewer from "@/components/notes/NoteViewer";
@@ -121,9 +122,15 @@ async function NoteContent({ noteId }: { noteId: string }) {
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium">Author</h3>
                   <div className="flex items-center gap-3">
-                    <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                      <User className="h-5 w-5" />
-                    </div>
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={note.profiles?.avatar_url || "/placeholder.svg"}
+                        alt={getUserDisplayName()}
+                      />
+                      <AvatarFallback>
+                        {getUserDisplayName()[0]?.toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <p className="text-sm font-medium">
                         {getUserDisplayName()}

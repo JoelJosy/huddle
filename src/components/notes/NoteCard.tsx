@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -92,15 +93,34 @@ export function NoteCard({ note, currentUserId }: NoteCardProps) {
           </div>
         )}
 
-        <div className="text-muted-foreground space-y-1 text-xs">
-          <p>Created by {getUserDisplayName()}</p>
-          <p>{new Date(note.created_at).toLocaleDateString()}</p>
-          {note.word_count && <p>{note.word_count} words</p>}
+        {/* Author Info with Avatar */}
+        <div className="flex items-center gap-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              src={note.profiles?.avatar_url || "/placeholder.svg"}
+              alt={getUserDisplayName()}
+            />
+            <AvatarFallback>
+              {getUserDisplayName()[0]?.toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <p className="text-sm font-medium">{getUserDisplayName()}</p>
+            <div className="text-muted-foreground flex items-center gap-2 text-xs">
+              <span>{new Date(note.created_at).toLocaleDateString()}</span>
+              {note.word_count && (
+                <>
+                  <span>•</span>
+                  <span>{note.word_count} words</span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Conditionally render edit/delete buttons */}
         {isOwner && (
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 border-t pt-2">
             <Link href={`/notes/edit/${note.id}`}>
               <Button variant="ghost" size="icon" disabled={isPending}>
                 <Edit className="h-4 w-4" />
