@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import Footer from "./layout/Footer";
+import Footer from "@/components/layout/Footer";
 
 const menuItems = [
   { name: "Groups", href: "groups" },
