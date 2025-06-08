@@ -162,8 +162,8 @@ export default function GroupChatArea({
   }
 
   return (
-    <div className="flex h-full flex-col bg-white">
-      <ScrollArea className="flex-1 p-4">
+    <div className="flex h-full max-h-[100dvh] flex-col overflow-hidden bg-white">
+      <ScrollArea className="flex-1 overflow-y-auto px-4 py-2">
         {isLoadingMessages ? (
           <div className="flex h-full items-center justify-center">
             <p className="text-muted-foreground">Loading messages...</p>
