@@ -53,7 +53,11 @@ export default async function GroupChatRoom({ groupId }: GroupChatRoomProps) {
 
         <div className="flex-1 overflow-hidden rounded-lg border">
           <Suspense fallback={<Skeleton className="h-full w-full" />}>
-            <GroupChatArea />
+            <GroupChatArea
+              groupId={groupId}
+              currentUserId={currentUserId}
+              isMember={isMember}
+            />
           </Suspense>
         </div>
       </div>
