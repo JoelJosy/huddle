@@ -12,7 +12,7 @@ export async function fetchMessages(groupId: string) {
     .select(
       `
       id, content, created_at, user_id,
-      profile:profiles(full_name, username)
+      profile:profiles(full_name, username, avatar_url)
     `,
     )
     .eq("group_id", groupId)
