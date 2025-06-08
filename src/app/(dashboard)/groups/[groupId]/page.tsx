@@ -29,7 +29,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
           </div>
         }
       >
-        <GroupChatRoom />
+        <GroupChatRoom groupId={groupId} />
       </Suspense>
     </div>
   );
