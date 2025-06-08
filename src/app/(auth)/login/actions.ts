@@ -97,7 +97,7 @@ export async function logOut() {
   }
 
   revalidatePath("/", "layout");
-  redirect("/login");
+  redirect("/");
 }
 
 export async function resetPassword(formData: FormData) {
