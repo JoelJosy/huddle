@@ -1,5 +1,14 @@
+import type React from "react";
 import Link from "next/link";
-import { Book, Boxes, Menu, Sunset, Trees, Zap } from "lucide-react";
+import {
+  BookOpen,
+  Boxes,
+  Menu,
+  FileText,
+  Users,
+  UserPlus,
+  Settings,
+} from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 
 import {
@@ -156,7 +165,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
 
 const Navbar = async ({
   menu = [
-    { title: "Home", url: "#" },
+    { title: "Home", url: "/dashboard" },
     {
       title: "Groups",
       url: "/groups",
@@ -164,19 +173,19 @@ const Navbar = async ({
         {
           title: "Create Group",
           description: "Start a new group to collaborate with others",
-          icon: <Book className="size-5 shrink-0" />,
+          icon: <UserPlus className="size-5 shrink-0" />,
           url: "/groups",
         },
         {
           title: "View Groups",
           description: "Explore existing groups and join discussions",
-          icon: <Trees className="size-5 shrink-0" />,
+          icon: <Users className="size-5 shrink-0" />,
           url: "/groups",
         },
         {
           title: "Rules & Guidelines",
           description: "Understand the rules for group participation",
-          icon: <Sunset className="size-5 shrink-0" />,
+          icon: <Settings className="size-5 shrink-0" />,
           url: "#",
         },
       ],
@@ -188,31 +197,31 @@ const Navbar = async ({
         {
           title: "Browse Public Notes",
           description: "Explore notes shared by our community",
-          icon: <Book className="size-5 shrink-0" />,
+          icon: <BookOpen className="size-5 shrink-0" />,
           url: "/notes",
         },
         {
           title: "Create Note",
-          description: "We are here to help you with any questions you have",
-          icon: <Sunset className="size-5 shrink-0" />,
+          description: "Create a new note to share with the community",
+          icon: <FileText className="size-5 shrink-0" />,
           url: "/notes/create",
         },
         {
           title: "My Notes",
-          description: "Check the current status of our services and APIs",
-          icon: <Trees className="size-5 shrink-0" />,
+          description: "View and manage your personal notes",
+          icon: <BookOpen className="size-5 shrink-0" />,
           url: "/notes/my-notes",
         },
       ],
     },
     {
       title: "FAQ",
-      url: "#",
+      url: "/faq",
     },
   ],
   auth = {
-    login: { title: "Login", url: "#" },
-    signup: { title: "Sign up", url: "#" },
+    login: { title: "Login", url: "/login" },
+    signup: { title: "Sign up", url: "/signup" },
   },
 }: NavbarProps) => {
   const supabase = await createClient();
