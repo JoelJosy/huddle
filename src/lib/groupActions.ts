@@ -151,7 +151,7 @@ export async function fetchGroupMembers(groupId: string) {
       role,
       joined_at,
       last_active,
-      profile:profiles(full_name, username)
+      profile:profiles(full_name, username, avatar_url)
     `,
     )
     .eq("group_id", groupId)

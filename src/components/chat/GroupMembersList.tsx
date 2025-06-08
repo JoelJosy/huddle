@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Crown } from "lucide-react";
 
@@ -24,6 +24,7 @@ export default function GroupMembersList({
               className="hover:bg-accent flex items-center gap-3 rounded-md p-2"
             >
               <Avatar>
+                <AvatarImage src={member.profile?.avatar_url} />
                 <AvatarFallback>
                   {member.profile?.full_name?.[0] ||
                     member.profile?.username?.[0] ||
