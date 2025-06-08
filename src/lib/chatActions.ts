@@ -58,13 +58,6 @@ export async function sendMessage(groupId: string, content: string) {
     throw new Error("Failed to send message");
   }
 
-  // Update last_active timestamp for the user in this group
-  await supabase
-    .from("group_members")
-    .update({ last_active: new Date().toISOString() })
-    .eq("group_id", groupId)
-    .eq("user_id", currentUserId);
-
   revalidatePath(`/groups/${groupId}`);
 
   return { success: true };
