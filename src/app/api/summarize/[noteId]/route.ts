@@ -7,7 +7,7 @@ export async function GET(
   req: Request,
   context: { params: { noteId: string } },
 ) {
-  const { noteId } = context.params;
+  const { noteId } = await context.params;
 
   const note = await fetchNoteById(noteId);
   if (!note)
