@@ -6,7 +6,7 @@ export async function summarizeNote(text: string): Promise<string> {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
-      contents: `You are an expert summarizer. Summarize the following academic notes in bullet points retaiining the key concepts, make it look pretty:
+      contents: `You are an expert summarizer. Summarize the following academic notes in bullet points retaiining the key concepts, make it look pretty, the output must be in markdown format:
                 ${text}`,
     });
     return response.text || "";
