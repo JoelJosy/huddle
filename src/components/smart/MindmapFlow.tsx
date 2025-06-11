@@ -14,6 +14,7 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import dagre from "dagre";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -106,21 +107,25 @@ export default function MindmapFlow({ noteId }: { noteId: string }) {
     fetchMindmap();
   }, [noteId]);
 
-  if (loading) return <div className="p-4 text-center">Loading mindmap...</div>;
-
   return (
     <div style={{ height: "100vh", width: "100%" }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        fitView
-      >
-        <Background />
-        <Controls />
-        <MiniMap />
-      </ReactFlow>
+      {loading ? (
+        <div className="flex h-full w-full items-center justify-center">
+          <LoadingSpinner text="Generating mindmap..." />
+        </div>
+      ) : (
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          fitView
+        >
+          <Background />
+          <Controls />
+          <MiniMap />
+        </ReactFlow>
+      )}
     </div>
   );
 }
