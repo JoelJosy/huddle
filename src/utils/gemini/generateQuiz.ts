@@ -9,7 +9,10 @@ export async function generateQuiz(text: string): Promise<any[]> {
       contents: `You are an expert quiz creator. Based on the following academic notes, generate exactly 5 multiple-choice questions (MCQs). Each question must have:
         - A question string
         - 4 answer options (as strings)
-        - The correct answer (exact string that matches one of the options)`,
+        - The correct answer (exact string that matches one of the options)
+        
+        Academic notes content:
+        ${text}`,
 
       config: {
         responseMimeType: "application/json",
