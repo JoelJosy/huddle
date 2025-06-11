@@ -40,7 +40,7 @@ async function DashboardStats() {
   const groupsCount = groupsResult.data?.length || 0;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">My Notes</CardTitle>
@@ -59,16 +59,6 @@ async function DashboardStats() {
         <CardContent>
           <div className="text-2xl font-bold">{groupsCount}</div>
           <p className="text-muted-foreground text-xs">Groups joined</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Flashcards</CardTitle>
-          <Zap className="text-muted-foreground h-4 w-4" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">Coming Soon</div>
-          <p className="text-muted-foreground text-xs">AI-generated sets</p>
         </CardContent>
       </Card>
     </div>
@@ -199,8 +189,8 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Flashcards Section */}
-          <Card className="group relative flex min-h-[320px] flex-col overflow-hidden transition-all hover:shadow-lg">
+          {/* Smart Features Section */}
+          <Card className="group relative flex min-h-[400px] flex-col overflow-hidden transition-all hover:shadow-lg">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-violet-50 opacity-50 dark:from-purple-950/20 dark:to-violet-950/20" />
             <CardHeader className="relative pb-4">
               <div className="flex items-center gap-3">
@@ -208,36 +198,67 @@ export default async function DashboardPage() {
                   <Zap className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl">AI Flashcards</CardTitle>
+                  <CardTitle className="text-xl">Smart Features</CardTitle>
                   <Badge variant="secondary" className="mt-1">
-                    Coming Soon
+                    AI-Powered
                   </Badge>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="relative flex flex-1 flex-col justify-between p-6 pt-0">
-              <CardDescription className="mb-6 text-base">
-                Generate intelligent flashcards from your notes using AI.
-                Perfect for quick reviews and memorization.
-              </CardDescription>
+              <div className="space-y-4">
+                <CardDescription className="text-base leading-relaxed">
+                  Transform your notes with AI superpowers! Generate intelligent
+                  summaries, create interactive quizzes, and visualize concepts
+                  with beautiful mindmaps.
+                </CardDescription>
+              </div>
               <div className="flex flex-col gap-3">
-                <Button disabled className="h-11 w-full">
-                  <Zap className="mr-2 h-4 w-4" />
-                  Generate Cards
-                </Button>
                 <Button
-                  variant="outline"
-                  size="sm"
-                  disabled
-                  className="h-9 w-full"
+                  asChild
+                  className="h-11 w-full bg-purple-600 hover:bg-purple-700"
                 >
-                  <Eye className="mr-2 h-4 w-4" />
-                  View Sets
+                  <Link href="/smart">
+                    <Zap className="mr-2 h-4 w-4" />
+                    Explore Smart Features
+                  </Link>
                 </Button>
+                <p className="text-muted-foreground text-center text-xs">
+                  Select any public note and unlock AI magic ✨
+                </p>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* FAQ Section */}
+        <Card className="bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-900/50 dark:to-gray-900/50">
+          <CardContent className="p-8">
+            <div className="space-y-4 text-center">
+              <div className="mb-2 flex items-center justify-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
+                  <span className="font-medium text-blue-600 dark:text-blue-400">
+                    ?
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold">
+                  Need Help Getting Started?
+                </h2>
+              </div>
+              <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+                Check out our comprehensive FAQ section for answers to common
+                questions about notes, study groups, and AI features. We've got
+                you covered!
+              </p>
+              <Button asChild variant="outline" size="lg" className="mt-6">
+                <Link href="/faq">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Visit FAQ
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
