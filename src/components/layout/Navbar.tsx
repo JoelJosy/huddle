@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import Image from "next/image";
+import { ThemeToggle } from "./ThemeToggle";
 
 import {
   Accordion,
@@ -62,20 +63,6 @@ interface NavbarProps {
     };
   };
 }
-
-const SubMenuLink = ({ item }: { item: MenuItem }) => (
-  <>
-    <div className="text-foreground">{item.icon}</div>
-    <div>
-      <div className="text-sm font-semibold">{item.title}</div>
-      {item.description && (
-        <p className="text-muted-foreground text-sm leading-snug">
-          {item.description}
-        </p>
-      )}
-    </div>
-  </>
-);
 
 const renderMenuItem = (item: MenuItem) => {
   if (item.items) {
@@ -260,6 +247,7 @@ const Navbar = async ({
             {user ? (
               // Show user menu when logged in
               <div className="flex items-center gap-4">
+                <ThemeToggle />
                 <span className="text-sm">
                   Welcome, {user.user_metadata.name || "User"}!
                 </span>
@@ -268,6 +256,7 @@ const Navbar = async ({
             ) : (
               // Show login/signup when not logged in
               <>
+                <ThemeToggle />
                 <Button asChild variant="outline">
                   <Link href={auth.login.url}>Login</Link>
                 </Button>
@@ -339,6 +328,7 @@ const Navbar = async ({
                   </Accordion>
 
                   <div className="flex flex-col gap-4">
+                    <ThemeToggle />
                     {user ? (
                       // Show user menu when logged in
                       <SignOutButton />

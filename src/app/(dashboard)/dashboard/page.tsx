@@ -73,9 +73,10 @@ export default async function DashboardPage() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
+    if (hour >= 5 && hour < 12) return "Good morning";
+    if (hour >= 12 && hour < 18) return "Good afternoon";
+    if (hour >= 18 && hour < 22) return "Good evening";
+    return "Good night";
   };
 
   const userName =
@@ -206,18 +207,13 @@ export default async function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent className="relative flex flex-1 flex-col justify-between p-6 pt-0">
-              <div className="space-y-4">
-                <CardDescription className="text-base leading-relaxed">
-                  Transform your notes with AI superpowers! Generate intelligent
-                  summaries, create interactive quizzes, and visualize concepts
-                  with beautiful mindmaps.
-                </CardDescription>
-              </div>
+              <CardDescription className="mb-6 text-base leading-relaxed">
+                Transform your notes with AI superpowers! Generate intelligent
+                summaries, create interactive quizzes, and visualize concepts
+                with beautiful mindmaps.
+              </CardDescription>
               <div className="flex flex-col gap-3">
-                <Button
-                  asChild
-                  className="h-11 w-full bg-purple-600 hover:bg-purple-700"
-                >
+                <Button asChild className="h-11 w-full">
                   <Link href="/smart">
                     <Zap className="mr-2 h-4 w-4" />
                     Explore Smart Features
