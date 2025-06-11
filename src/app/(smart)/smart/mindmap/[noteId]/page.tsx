@@ -1,20 +1,14 @@
 "use client";
 
-import React from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, GitBranch, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MindmapFlow from "@/components/smart/MindmapFlow";
 
-interface Props {
-  params: Promise<{
-    noteId: string;
-  }>;
-}
-
-export default function Page({ params }: Props) {
+export default function Page() {
+  const params = useParams();
   const router = useRouter();
-  const { noteId } = React.use(params);
+  const noteId = params.noteId as string;
 
   return (
     <div className="from-background via-background to-muted/20 min-h-screen bg-gradient-to-br">

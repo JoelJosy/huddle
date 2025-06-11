@@ -131,10 +131,6 @@ export default function MindmapFlow({ noteId }: { noteId: string }) {
     toast.success("Mindmap regenerated!");
   };
 
-  const handleExportImage = () => {
-    toast.info("Export feature coming soon!");
-  };
-
   useEffect(() => {
     if (noteId) {
       fetchMindmap();
@@ -176,16 +172,6 @@ export default function MindmapFlow({ noteId }: { noteId: string }) {
             className={`h-4 w-4 ${isRegenerating ? "animate-spin" : ""}`}
           />
           {isRegenerating ? "Regenerating..." : "Regenerate Mindmap"}
-        </Button>
-
-        <Button
-          onClick={handleExportImage}
-          disabled={loading}
-          variant="secondary"
-          className="gap-2 transition-all hover:scale-105"
-        >
-          <Copy className="h-4 w-4" />
-          Export Image
         </Button>
       </div>
 
