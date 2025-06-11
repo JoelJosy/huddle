@@ -7,4 +7,6 @@
 <circle cx="18.5" cy="18.5" r="6" fill="#A3DAFF" stroke="#A3DAFF"/>
 <circle cx="18.5" cy="44.5" r="6" fill="#A3DAFF" stroke="#A3DAFF"/>
 <circle cx="44.5" cy="18.5" r="6" fill="#A3DAFF" stroke="#A3DAFF"/>
+<rect x="44.4458" y="9.255" width="12.99" height="49.8974" rx="6.49502" transform="rotate(44.6219 44.4458 9.255)" fill="#A3DAFF"/>
+<rect x="53.8237" y="44.1577" width="13.0723" height="49.8974" rx="6.53614" transform="rotate(134.622 53.8237 44.1577)" fill="#A3DAFF"/>
 </svg>
