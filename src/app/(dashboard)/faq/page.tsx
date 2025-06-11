@@ -14,13 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  BookOpen,
-  Users,
-  ShieldCheck,
-  Lightbulb,
-  Settings,
-} from "lucide-react";
+import { BookOpen, Users, ShieldCheck, Lightbulb, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "FAQ - Huddle",
@@ -58,9 +52,9 @@ export default function FAQPage() {
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Groups</span>
             </TabsTrigger>
-            <TabsTrigger value="account" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Account</span>
+            <TabsTrigger value="smart" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              <span className="hidden sm:inline">Smart Features</span>
             </TabsTrigger>
           </TabsList>
 
@@ -289,77 +283,133 @@ export default function FAQPage() {
             </Card>
           </TabsContent>
 
-          {/* Account Questions */}
-          <TabsContent value="account">
+          {/* Smart Features Questions */}
+          <TabsContent value="smart">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Account & Settings
+                  <Zap className="h-5 w-5" />
+                  Smart Features
                 </CardTitle>
                 <CardDescription>
-                  Questions about your account and preferences
+                  Questions about AI-powered features and tools
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="create-account">
+                  <AccordionItem value="what-are-smart-features">
                     <AccordionTrigger>
-                      How do I create an account?
+                      What are Smart Features?
                     </AccordionTrigger>
                     <AccordionContent>
                       <p className="text-muted-foreground">
-                        You can create an account by clicking "Sign Up" on the
-                        homepage or login page. You can register using your
-                        email address and password, or use single sign-on
-                        options like Google or GitHub. Verify your email address
-                        to activate your account.
+                        Smart Features are AI-powered tools that transform your
+                        notes into interactive learning experiences. They
+                        include note summarization, quiz generation, and mindmap
+                        visualization. These features help you understand and
+                        retain information more effectively by presenting
+                        content in different formats.
                       </p>
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="change-password">
+                  <AccordionItem value="how-to-access-smart-features">
                     <AccordionTrigger>
-                      How do I change my password?
+                      How do I access Smart Features?
                     </AccordionTrigger>
                     <AccordionContent>
                       <p className="text-muted-foreground">
-                        To change your password, go to your Account Settings
-                        page, navigate to the Security tab, and click "Change
-                        Password". You'll need to enter your current password
-                        and then your new password twice to confirm. If you've
-                        forgotten your password, use the "Forgot Password" link
-                        on the login page.
+                        To access Smart Features, navigate to the Smart Features
+                        page from your dashboard. Select any public note from
+                        the list on the left side, and the AI-powered tools will
+                        become available on the right side. You can then choose
+                        to summarize, generate a quiz, or create a mindmap from
+                        that note.
                       </p>
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="delete-account">
+                  <AccordionItem value="note-summarization">
                     <AccordionTrigger>
-                      Can I delete my account?
+                      How does note summarization work?
                     </AccordionTrigger>
                     <AccordionContent>
                       <p className="text-muted-foreground">
-                        Yes, you can delete your account at any time. Go to
-                        Account Settings, scroll to the bottom, and click
-                        "Delete Account". This will permanently remove your
-                        account and all associated data. This action cannot be
-                        undone, so please be certain before proceeding.
+                        Our AI summarization feature analyzes the content of a
+                        note and generates a concise summary highlighting the
+                        key points and main concepts. This is perfect for quick
+                        reviews, creating study guides, or getting an overview
+                        of lengthy notes. The summary maintains the core
+                        information while reducing the content to its essential
+                        elements.
                       </p>
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="notifications">
+                  <AccordionItem value="quiz-generation">
                     <AccordionTrigger>
-                      How do I manage notifications?
+                      How are quizzes generated from notes?
                     </AccordionTrigger>
                     <AccordionContent>
                       <p className="text-muted-foreground">
-                        You can manage your notification preferences in the
-                        Account Settings under the Notifications tab. Here you
-                        can choose which events trigger notifications (new
-                        messages, group invites, etc.) and how you receive them
-                        (email, in-app, or both).
+                        The quiz generation feature uses AI to create
+                        interactive multiple-choice questions based on the
+                        content of your selected note. The system identifies key
+                        concepts, facts, and relationships in the text and
+                        formulates questions that test comprehension and
+                        retention. This is an excellent way to test your
+                        understanding and prepare for exams.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="mindmap-creation">
+                    <AccordionTrigger>
+                      What are mindmaps and how are they created?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-muted-foreground">
+                        Mindmaps are visual representations of information that
+                        show relationships between concepts. Our AI analyzes
+                        your note content and creates an interactive mindmap
+                        with nodes representing key topics and connections
+                        showing how they relate to each other. This visual
+                        format helps with understanding complex relationships
+                        and memorizing information through spatial learning.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="smart-features-limitations">
+                    <AccordionTrigger>
+                      Are there any limitations to Smart Features?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-muted-foreground">
+                        Smart Features work best with well-structured notes that
+                        contain substantive content. Very short notes or those
+                        with minimal text may not generate optimal results. The
+                        AI performs better with educational content, factual
+                        information, and organized text. Currently, Smart
+                        Features only work with public notes to ensure quality
+                        and consistency.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="smart-features-accuracy">
+                    <AccordionTrigger>
+                      How accurate are the AI-generated results?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-muted-foreground">
+                        Our AI models are trained on high-quality educational
+                        content and continuously improved. While the results are
+                        generally accurate and helpful, we recommend reviewing
+                        AI-generated content as a supplementary learning tool
+                        rather than a replacement for thorough study. The
+                        accuracy depends on the quality and clarity of the
+                        source note content.
                       </p>
                     </AccordionContent>
                   </AccordionItem>

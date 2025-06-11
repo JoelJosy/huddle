@@ -214,7 +214,7 @@ const Navbar = async ({
         },
       ],
     },
-    { title: "Smart Features", url: "/smart" },
+    { title: "Learn", url: "/smart" },
   ],
   auth = {
     login: { title: "Login", url: "/login" },
