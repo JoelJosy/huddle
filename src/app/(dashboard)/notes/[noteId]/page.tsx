@@ -124,7 +124,7 @@ async function NoteContent({ noteId }: { noteId: string }) {
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
                       <AvatarImage
-                        src={note.profiles?.avatar_url || "/placeholder.svg"}
+                        src={note.profiles?.avatar_url}
                         alt={getUserDisplayName()}
                       />
                       <AvatarFallback>

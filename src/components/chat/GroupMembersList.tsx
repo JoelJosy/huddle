@@ -58,7 +58,7 @@ export default function GroupMembersList({
               <div className="relative">
                 <Avatar>
                   <AvatarImage
-                    src={member.profile?.avatar_url || "/placeholder.svg"}
+                    src={member.profile?.avatar_url}
                     alt={
                       member.profile?.full_name ||
                       member.profile?.username ||

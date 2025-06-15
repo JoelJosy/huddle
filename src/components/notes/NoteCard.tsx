@@ -100,7 +100,7 @@ export const NoteCard = memo(function NoteCard({
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
             <AvatarImage
-              src={note.profiles?.avatar_url || "/placeholder.svg"}
+              src={note.profiles?.avatar_url}
               alt={getUserDisplayName()}
             />
             <AvatarFallback>
