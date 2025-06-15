@@ -50,18 +50,16 @@ export async function fetchPublicGroups(
     const totalCount = groups.length > 0 ? Number(groups[0].total_count) : 0;
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    // Remove total_count from the group objects to ensure proper typing
-    const cleanGroups: StudyGroup[] = groups.map(
-      ({ total_count, ...group }: any) => ({
-        id: group.id,
-        name: group.name,
-        description: group.description,
-        member_count: group.member_count,
-        created_at: group.created_at,
-        owner_name: group.owner_name,
-        owner_id: group.owner_id,
-      }),
-    );
+    // Clean the data - owner_name is now included in the RPC response
+    const cleanGroups: StudyGroup[] = groups.map((group: any) => ({
+      id: group.id,
+      name: group.name,
+      description: group.description,
+      member_count: group.member_count,
+      created_at: group.created_at,
+      owner_name: group.owner_name,
+      owner_id: group.owner_id,
+    }));
 
     return {
       data: cleanGroups,

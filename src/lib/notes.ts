@@ -37,7 +37,7 @@ export async function fetchPublicNotes(
   const supabase = await createClient();
   const offset = (page - 1) * pageSize;
 
-  // Use the updated RPC function with pagination
+  // Use the optimized RPC function that includes profile data
   const { data, error } = await supabase.rpc("search_notes", {
     search_term: searchQuery || "",
     page_limit: pageSize,
@@ -71,23 +71,7 @@ export async function fetchPublicNotes(
     };
   }
 
-  // Get unique user IDs from notes
-  const userIds = [...new Set(notes.map((note: any) => note.user_id))];
-
-  // Fetch profiles separately
-  const { data: profiles, error: profilesError } = await supabase
-    .from("profiles")
-    .select("id, full_name, email, username, avatar_url")
-    .in("id", userIds);
-
-  if (profilesError) {
-    console.error("Error fetching profiles:", profilesError);
-  }
-
-  // Create a map for quick profile lookup
-  const profilesMap = new Map(profiles?.map((p) => [p.id, p]) || []);
-
-  // Transform the data to match our interface
+  // Transform the data - no need for separate profile fetch now!
   const transformedNotes: Note[] = notes.map((note: any) => ({
     id: note.id,
     title: note.title,
@@ -98,7 +82,12 @@ export async function fetchPublicNotes(
     word_count: note.word_count,
     user_id: note.user_id,
     subjects: note.subject_name ? { name: note.subject_name } : null,
-    profiles: profilesMap.get(note.user_id) || null,
+    profiles: {
+      full_name: note.full_name,
+      email: note.email,
+      username: note.username,
+      avatar_url: note.avatar_url,
+    },
   }));
 
   return {
@@ -155,7 +144,7 @@ export async function fetchUserNotes(
     };
   }
 
-  // Fetch profiles for the user
+  // Fetch profile once for the user (since all notes belong to same user)
   const { data: profile, error: profilesError } = await supabase
     .from("profiles")
     .select("id, full_name, email, username, avatar_url")
@@ -165,9 +154,6 @@ export async function fetchUserNotes(
   if (profilesError && (profilesError as any).status !== 406) {
     console.error("Error fetching profile:", profilesError);
   }
-
-  // Create a map for quick profile lookup
-  const profilesMap = new Map(profile ? [[profile.id, profile]] : []);
 
   // Transform the data to match our interface
   const transformedNotes: Note[] = notes.map((note: any) => ({
@@ -180,7 +166,7 @@ export async function fetchUserNotes(
     word_count: note.word_count,
     user_id: note.user_id,
     subjects: note.subject_name ? { name: note.subject_name } : null,
-    profiles: profilesMap.get(note.user_id) || null,
+    profiles: profile || null,
   }));
 
   return {
@@ -196,14 +182,12 @@ export async function fetchUserNotes(
 export async function fetchNoteById(noteId: string): Promise<Note | null> {
   const supabase = await createClient();
 
-  // Validate the noteId
   if (!noteId || noteId === "undefined" || noteId.trim() === "") {
     console.error("Invalid note ID provided:", noteId);
     return null;
   }
 
   try {
-    // Get the note with its subject
     const { data: note, error } = await supabase
       .from("notes")
       .select(
@@ -220,7 +204,7 @@ export async function fetchNoteById(noteId: string): Promise<Note | null> {
       `,
       )
       .eq("id", noteId)
-      .eq("visibility", "public") // Only public notes
+      .eq("visibility", "public")
       .single();
 
     if (error) {
@@ -233,14 +217,12 @@ export async function fetchNoteById(noteId: string): Promise<Note | null> {
       return null;
     }
 
-    // Fetch the profile for this note's author
     const { data: profile } = await supabase
       .from("profiles")
       .select("id, full_name, email, username, avatar_url")
       .eq("id", note.user_id)
       .single();
 
-    // Transform the data to match our interface
     const transformedNote: Note = {
       ...note,
       subjects: Array.isArray(note.subjects)
