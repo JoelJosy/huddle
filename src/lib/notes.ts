@@ -20,60 +20,55 @@ export interface Note {
   } | null;
 }
 
-export async function fetchPublicNotes(searchQuery?: string): Promise<Note[]> {
+export interface PaginatedResult<T> {
+  data: T[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export async function fetchPublicNotes(
+  searchQuery?: string,
+  page = 1,
+  pageSize = 4,
+): Promise<PaginatedResult<Note>> {
   const supabase = await createClient();
+  const offset = (page - 1) * pageSize;
 
-  let notes;
-  let error;
+  // Use the updated RPC function with pagination
+  const { data, error } = await supabase.rpc("search_notes", {
+    search_term: searchQuery || "",
+    page_limit: pageSize,
+    page_offset: offset,
+  });
 
-  if (searchQuery) {
-    // Use the RPC function for search
-    const { data, error: rpcError } = await supabase.rpc("search_notes", {
-      search_term: searchQuery,
-    });
-
-    if (rpcError) {
-      console.error("Error fetching notes with search:", rpcError);
-      return [];
-    }
-
-    // Transform RPC results to match expected structure
-    notes =
-      data?.map((note: any) => ({
-        ...note,
-        subjects: note.subject_name ? { name: note.subject_name } : null,
-      })) || [];
-  } else {
-    // Use the original query for non-search requests
-    const { data, error: queryError } = await supabase
-      .from("notes")
-      .select(
-        `
-        id,
-        title,
-        excerpt,
-        content_url,
-        tags,
-        created_at,
-        word_count,
-        user_id,
-        subjects(name)
-      `,
-      )
-      .eq("visibility", "public")
-      .order("created_at", { ascending: false });
-
-    notes = data;
-    error = queryError;
-
-    if (error) {
-      console.error("Error fetching notes:", error);
-      return [];
-    }
+  if (error) {
+    console.error("Error fetching notes with pagination:", error);
+    return {
+      data: [],
+      totalCount: 0,
+      currentPage: page,
+      totalPages: 0,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    };
   }
 
-  if (!notes || notes.length === 0) {
-    return [];
+  const notes = data || [];
+  const totalCount = notes.length > 0 ? Number(notes[0].total_count) : 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  if (notes.length === 0) {
+    return {
+      data: [],
+      totalCount: 0,
+      currentPage: page,
+      totalPages: 0,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    };
   }
 
   // Get unique user IDs from notes
@@ -94,35 +89,70 @@ export async function fetchPublicNotes(searchQuery?: string): Promise<Note[]> {
 
   // Transform the data to match our interface
   const transformedNotes: Note[] = notes.map((note: any) => ({
-    ...note,
-    subjects: Array.isArray(note.subjects)
-      ? note.subjects[0] || null
-      : note.subjects,
+    id: note.id,
+    title: note.title,
+    excerpt: note.excerpt,
+    content_url: note.content_url,
+    tags: note.tags,
+    created_at: note.created_at,
+    word_count: note.word_count,
+    user_id: note.user_id,
+    subjects: note.subject_name ? { name: note.subject_name } : null,
     profiles: profilesMap.get(note.user_id) || null,
   }));
 
-  return transformedNotes;
+  return {
+    data: transformedNotes,
+    totalCount,
+    currentPage: page,
+    totalPages,
+    hasNextPage: page < totalPages,
+    hasPreviousPage: page > 1,
+  };
 }
 
 export async function fetchUserNotes(
   userId: string,
   searchQuery?: string,
-): Promise<Note[]> {
+  page = 1,
+  pageSize = 4,
+): Promise<PaginatedResult<Note>> {
   const supabase = await createClient();
+  const offset = (page - 1) * pageSize;
 
-  // Call the RPC function
+  // Call the updated RPC function with pagination
   const { data: notes, error } = await supabase.rpc("search_user_term", {
     p_user_id: userId,
     search_term: searchQuery || "",
+    page_limit: pageSize,
+    page_offset: offset,
   });
 
   if (error) {
     console.error("Error fetching user notes:", error);
-    return [];
+    return {
+      data: [],
+      totalCount: 0,
+      currentPage: page,
+      totalPages: 0,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    };
   }
 
+  const totalCount =
+    notes && notes.length > 0 ? Number(notes[0].total_count) : 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
+
   if (!notes || notes.length === 0) {
-    return [];
+    return {
+      data: [],
+      totalCount: 0,
+      currentPage: page,
+      totalPages: 0,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    };
   }
 
   // Fetch profiles for the user
@@ -153,7 +183,14 @@ export async function fetchUserNotes(
     profiles: profilesMap.get(note.user_id) || null,
   }));
 
-  return transformedNotes;
+  return {
+    data: transformedNotes,
+    totalCount,
+    currentPage: page,
+    totalPages,
+    hasNextPage: page < totalPages,
+    hasPreviousPage: page > 1,
+  };
 }
 
 export async function fetchNoteById(noteId: string): Promise<Note | null> {

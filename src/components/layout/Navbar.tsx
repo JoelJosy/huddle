@@ -212,7 +212,6 @@ const Navbar = async ({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log("user", user);
   return (
     <section className="my-2 flex w-full justify-center py-2">
       <div className="container min-w-full px-8">

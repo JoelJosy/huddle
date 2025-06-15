@@ -6,21 +6,25 @@ import { fetchPublicGroups } from "@/lib/groups";
 import { GroupsGrid } from "@/components/groups/GroupsGrid";
 import { CreateGroupDialog } from "@/components/groups/CreateGroupDialog";
 import getCurrentUserId from "@/lib/accountActions";
+import { PaginationControls } from "@/components/shared/pagination-controls";
 
 interface GroupsPageProps {
   searchParams: {
     search?: string;
+    page?: string;
   };
 }
 
 interface GroupsContentProps {
   searchQuery?: string;
   currentUserId: string | undefined;
+  currentPage: number;
 }
 
 async function GroupsContent({
   searchQuery,
   currentUserId,
+  currentPage,
 }: GroupsContentProps) {
   if (!currentUserId) {
     return (
@@ -32,18 +36,25 @@ async function GroupsContent({
     );
   }
 
-  const groups = await fetchPublicGroups(searchQuery);
+  const result = await fetchPublicGroups(searchQuery, currentPage);
 
   return (
     <>
       <div className="mb-8 text-center">
         <p className="text-muted-foreground">
           {searchQuery
-            ? `Found ${groups.length} groups for "${searchQuery}"`
-            : `${groups.length} public study groups available`}
+            ? `Found ${result.totalCount} groups for "${searchQuery}"`
+            : `${result.totalCount} public study groups available`}
         </p>
       </div>
-      <GroupsGrid groups={groups} currentUserId={currentUserId} />
+      <GroupsGrid groups={result.data} currentUserId={currentUserId} />
+      <PaginationControls
+        currentPage={result.currentPage}
+        totalPages={result.totalPages}
+        hasNextPage={result.hasNextPage}
+        hasPreviousPage={result.hasPreviousPage}
+        basePath="/groups"
+      />
     </>
   );
 }
@@ -51,6 +62,7 @@ async function GroupsContent({
 export default async function GroupsPage({ searchParams }: GroupsPageProps) {
   const resolvedSearchParams = await searchParams;
   const searchQuery = resolvedSearchParams.search;
+  const currentPage = Number.parseInt(resolvedSearchParams.page || "1", 10);
   const userId = await getCurrentUserId();
 
   return (
@@ -87,7 +99,11 @@ export default async function GroupsPage({ searchParams }: GroupsPageProps) {
           </div>
         }
       >
-        <GroupsContent searchQuery={searchQuery} currentUserId={userId} />
+        <GroupsContent
+          searchQuery={searchQuery}
+          currentUserId={userId}
+          currentPage={currentPage}
+        />
       </Suspense>
     </div>
   );

@@ -7,19 +7,26 @@ import { fetchPublicNotes } from "@/lib/notes";
 import Link from "next/link";
 import { NotesGrid } from "@/components/notes/NotesGrid";
 import getCurrentUserId from "@/lib/accountActions";
+import { PaginationControls } from "@/components/shared/pagination-controls";
 
 interface NotesPageProps {
   searchParams: {
     search?: string;
+    page?: string;
   };
 }
 
 interface NotesContentProps {
   searchQuery?: string;
   currentUserId: string | undefined;
+  currentPage: number;
 }
 
-async function NotesContent({ searchQuery, currentUserId }: NotesContentProps) {
+async function NotesContent({
+  searchQuery,
+  currentUserId,
+  currentPage,
+}: NotesContentProps) {
   if (!currentUserId) {
     return (
       <div className="mb-8 text-center">
@@ -30,18 +37,25 @@ async function NotesContent({ searchQuery, currentUserId }: NotesContentProps) {
     );
   }
 
-  const notes = await fetchPublicNotes(searchQuery);
+  const result = await fetchPublicNotes(searchQuery, currentPage);
 
   return (
     <>
       <div className="mb-8 text-center">
         <p className="text-muted-foreground">
           {searchQuery
-            ? `Found ${notes.length} notes for "${searchQuery}"`
-            : `${notes.length} public notes available`}
+            ? `Found ${result.totalCount} notes for "${searchQuery}"`
+            : `${result.totalCount} public notes available`}
         </p>
       </div>
-      <NotesGrid notes={notes} currentUserId={currentUserId} />
+      <NotesGrid notes={result.data} currentUserId={currentUserId} />
+      <PaginationControls
+        currentPage={result.currentPage}
+        totalPages={result.totalPages}
+        hasNextPage={result.hasNextPage}
+        hasPreviousPage={result.hasPreviousPage}
+        basePath="/notes"
+      />
     </>
   );
 }
@@ -49,6 +63,7 @@ async function NotesContent({ searchQuery, currentUserId }: NotesContentProps) {
 export default async function NotesPage({ searchParams }: NotesPageProps) {
   const resolvedSearchParams = await searchParams;
   const searchQuery = resolvedSearchParams.search;
+  const currentPage = Number.parseInt(resolvedSearchParams.page || "1", 10);
   const userId = await getCurrentUserId();
 
   return (
@@ -86,7 +101,11 @@ export default async function NotesPage({ searchParams }: NotesPageProps) {
           </div>
         }
       >
-        <NotesContent searchQuery={searchQuery} currentUserId={userId} />
+        <NotesContent
+          searchQuery={searchQuery}
+          currentUserId={userId}
+          currentPage={currentPage}
+        />
       </Suspense>
     </div>
   );

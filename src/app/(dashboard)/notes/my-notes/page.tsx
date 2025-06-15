@@ -6,21 +6,27 @@ import { NotesSearchBar } from "@/components/notes/NotesSearchBar";
 import { NotesGrid } from "@/components/notes/NotesGrid";
 import { fetchUserNotes } from "@/lib/notes";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
 import getCurrentUserId from "@/lib/accountActions";
+import { PaginationControls } from "@/components/shared/pagination-controls";
 
 interface NotesPageProps {
   searchParams: {
     search?: string;
+    page?: string;
   };
 }
 
 interface NotesContentProps {
   searchQuery?: string;
   currentUserId: string | undefined;
+  currentPage: number;
 }
 
-async function NotesContent({ searchQuery, currentUserId }: NotesContentProps) {
+async function NotesContent({
+  searchQuery,
+  currentUserId,
+  currentPage,
+}: NotesContentProps) {
   if (!currentUserId) {
     return (
       <div className="mb-8 text-center">
@@ -31,18 +37,25 @@ async function NotesContent({ searchQuery, currentUserId }: NotesContentProps) {
     );
   }
 
-  const notes = await fetchUserNotes(currentUserId, searchQuery);
+  const result = await fetchUserNotes(currentUserId, searchQuery, currentPage);
 
   return (
     <>
       <div className="mb-8 text-center">
         <p className="text-muted-foreground">
           {searchQuery
-            ? `Found ${notes.length} notes for "${searchQuery}"`
-            : `Found ${notes.length} notes`}
+            ? `Found ${result.totalCount} notes for "${searchQuery}"`
+            : `Found ${result.totalCount} notes`}
         </p>
       </div>
-      <NotesGrid notes={notes} currentUserId={currentUserId} />{" "}
+      <NotesGrid notes={result.data} currentUserId={currentUserId} />
+      <PaginationControls
+        currentPage={result.currentPage}
+        totalPages={result.totalPages}
+        hasNextPage={result.hasNextPage}
+        hasPreviousPage={result.hasPreviousPage}
+        basePath="/notes/my-notes"
+      />
     </>
   );
 }
@@ -50,6 +63,7 @@ async function NotesContent({ searchQuery, currentUserId }: NotesContentProps) {
 export default async function MyNotesPage({ searchParams }: NotesPageProps) {
   const resolvedSearchParams = await searchParams;
   const searchQuery = resolvedSearchParams.search;
+  const currentPage = Number.parseInt(resolvedSearchParams.page || "1", 10);
   const userId = await getCurrentUserId();
 
   return (
@@ -87,7 +101,11 @@ export default async function MyNotesPage({ searchParams }: NotesPageProps) {
           </div>
         }
       >
-        <NotesContent searchQuery={searchQuery} currentUserId={userId} />
+        <NotesContent
+          searchQuery={searchQuery}
+          currentUserId={userId}
+          currentPage={currentPage}
+        />
       </Suspense>
     </div>
   );
