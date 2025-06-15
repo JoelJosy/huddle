@@ -24,7 +24,7 @@ import {
 import { StudyGroup } from "@/lib/groups";
 import { Users, Calendar, User, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useState, useTransition, memo } from "react";
 import { toast } from "sonner";
 import { deleteStudyGroup } from "@/lib/groupActions";
 
@@ -33,7 +33,10 @@ interface GroupCardProps {
   currentUserId: string;
 }
 
-export function GroupCard({ group, currentUserId }: GroupCardProps) {
+export const GroupCard = memo(function GroupCard({
+  group,
+  currentUserId,
+}: GroupCardProps) {
   const isOwner = group.owner_id === currentUserId;
   const [isPending, startTransition] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -146,4 +149,4 @@ export function GroupCard({ group, currentUserId }: GroupCardProps) {
       </CardFooter>
     </Card>
   );
-}
+});

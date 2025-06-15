@@ -19,7 +19,7 @@ import { Edit, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Note } from "@/lib/notes";
 import { deleteNote } from "@/lib/noteActions";
-import { useState, useTransition } from "react";
+import { useState, useTransition, memo } from "react";
 import { toast } from "sonner";
 
 interface NoteCardProps {
@@ -27,7 +27,10 @@ interface NoteCardProps {
   currentUserId?: string;
 }
 
-export function NoteCard({ note, currentUserId }: NoteCardProps) {
+export const NoteCard = memo(function NoteCard({
+  note,
+  currentUserId,
+}: NoteCardProps) {
   const [isPending, startTransition] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -177,4 +180,4 @@ export function NoteCard({ note, currentUserId }: NoteCardProps) {
       </CardContent>
     </Card>
   );
-}
+});

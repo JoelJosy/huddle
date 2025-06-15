@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef, useImperativeHandle, useEffect } from "react";
+import { forwardRef, useImperativeHandle, useEffect, useMemo } from "react";
 import { Card, CardTitle, CardContent, CardHeader } from "../ui/card";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -26,8 +26,9 @@ interface NoteEditorProps {
 
 const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
   ({ initialContent, onReady }, ref) => {
-    const editor = useEditor({
-      extensions: [
+    // Memoize extensions to prevent recreation on every render
+    const extensions = useMemo(
+      () => [
         StarterKit.configure({
           bulletList: {
             HTMLAttributes: {
@@ -50,6 +51,11 @@ const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
           limit: 50000,
         }),
       ],
+      [],
+    );
+
+    const editor = useEditor({
+      extensions,
       content: initialContent || "<p>Enter note content here!</p>",
       autofocus: true,
       editable: true,
@@ -61,14 +67,22 @@ const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
             "prose prose-sm m-0 p-4 focus:outline-none max-w-none min-h-full",
         },
       },
+      // Add performance optimizations
+      enableInputRules: true,
+      enablePasteRules: true,
+      enableCoreExtensions: true,
     });
 
-    // Handle initial content loading
+    // Handle initial content loading with debouncing
     useEffect(() => {
       if (editor && initialContent) {
-        editor.commands.setContent(initialContent);
+        // Use requestAnimationFrame to defer content setting
+        requestAnimationFrame(() => {
+          editor.commands.setContent(initialContent);
+          onReady?.();
+        });
       }
-    }, [editor, initialContent]);
+    }, [editor, initialContent, onReady]);
 
     useImperativeHandle(ref, () => ({
       getJSON: () => editor?.getJSON(),
@@ -78,7 +92,6 @@ const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
       getCharacterCount: () => editor?.storage.characterCount.characters() || 0,
       setContent: (content: any) => {
         if (editor) {
-          console.log("Setting content via ref:", content);
           editor.commands.setContent(content);
         }
       },
@@ -94,12 +107,10 @@ const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
           </CardHeader>
 
           <CardContent className="flex flex-1 flex-col overflow-hidden p-4">
-            {/* MenuBar at the top */}
             <div className="mb-4 flex-shrink-0">
               <MenuBar editor={editor} />
             </div>
 
-            {/* Scrollable editor content */}
             <div className="bg-muted/30 flex flex-1 flex-col overflow-hidden rounded-lg border">
               <div className="flex-1 overflow-y-auto">
                 <div className="h-full">
@@ -111,7 +122,6 @@ const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
               </div>
             </div>
 
-            {/* Word count display at bottom with white background */}
             {editor && (
               <div className="text-muted-foreground mt-4 flex-shrink-0 rounded-b-lg border-t border-r border-b border-l bg-white px-3 py-2 text-right text-sm">
                 {editor.storage.characterCount.words()} words,{" "}
