@@ -180,7 +180,8 @@ A modern, AI-powered learning platform that revolutionizes how students create, 
    Create the following storage buckets in your Supabase dashboard:
 
    - `note-contents` (for storing note content files)
-   - `my-images` (for user-uploaded images)
+   - `profile-avatars` (for storing avatar images to prevent google rate limiting)
+   - `my-images` (for other images)
 
 6. **Configure Authentication**
 

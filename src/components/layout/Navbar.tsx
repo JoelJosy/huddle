@@ -212,6 +212,7 @@ const Navbar = async ({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  console.log("user", user);
   return (
     <section className="my-2 flex w-full justify-center py-2">
       <div className="container min-w-full px-8">
@@ -249,7 +250,7 @@ const Navbar = async ({
               <div className="flex items-center gap-4">
                 <ThemeToggle />
                 <span className="text-sm">
-                  Welcome, {user.user_metadata.name || "User"}!
+                  Welcome, {user.user_metadata.full_name || "User"}!
                 </span>
                 <SignOutButton />
               </div>
