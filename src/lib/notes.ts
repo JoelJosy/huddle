@@ -34,7 +34,7 @@ export async function fetchPublicNotes(
   page = 1,
   pageSize = 4,
 ): Promise<PaginatedResult<Note>> {
-  const supabase = await createClient();
+  const supabase = createClient();
   const offset = (page - 1) * pageSize;
 
   // Use the optimized RPC function that includes profile data
@@ -106,7 +106,7 @@ export async function fetchUserNotes(
   page = 1,
   pageSize = 4,
 ): Promise<PaginatedResult<Note>> {
-  const supabase = await createClient();
+  const supabase = createClient();
   const offset = (page - 1) * pageSize;
 
   // Call the updated RPC function with pagination
@@ -180,7 +180,7 @@ export async function fetchUserNotes(
 }
 
 export async function fetchNoteById(noteId: string): Promise<Note | null> {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   if (!noteId || noteId === "undefined" || noteId.trim() === "") {
     console.error("Invalid note ID provided:", noteId);
@@ -239,7 +239,7 @@ export async function fetchNoteById(noteId: string): Promise<Note | null> {
 }
 
 export async function fetchNoteContent(contentUrl: string): Promise<any> {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     const { data, error } = await supabase.storage

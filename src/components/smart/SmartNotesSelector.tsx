@@ -24,6 +24,9 @@ export function SmartNotesSelector({
   searchQuery,
   isLoading,
 }: SmartNotesSelectorProps) {
+  // Ensure notes is always an array
+  const safeNotes = Array.isArray(notes) ? notes : [];
+
   const getUserDisplayName = (note: Note) => {
     if (note.profiles?.full_name) return note.profiles.full_name;
     if (note.profiles?.username) return note.profiles.username;
@@ -82,7 +85,7 @@ export function SmartNotesSelector({
           <FileText className="h-5 w-5" />
           Select a Note
           <Badge variant="secondary" className="ml-auto">
-            {notes.length} available
+            {safeNotes.length} available
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -92,7 +95,7 @@ export function SmartNotesSelector({
 
         {/* Notes List */}
         <ScrollArea className="h-[500px] pr-2">
-          {notes.length === 0 ? (
+          {safeNotes.length === 0 ? (
             <div className="py-8 text-center">
               <FileText className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-muted-foreground">
@@ -103,7 +106,7 @@ export function SmartNotesSelector({
             </div>
           ) : (
             <div className="space-y-3 p-1">
-              {notes.map((note) => (
+              {safeNotes.map((note) => (
                 <Card
                   key={note.id}
                   className={cn(

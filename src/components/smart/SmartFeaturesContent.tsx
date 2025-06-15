@@ -22,7 +22,8 @@ export function SmartFeaturesContent({
     const loadNotes = async () => {
       setIsLoading(true);
       try {
-        const fetchedNotes = await fetchPublicNotes(searchQuery);
+        const result = await fetchPublicNotes(searchQuery);
+        const fetchedNotes = result.data;
         setNotes(fetchedNotes);
         // Clear selected note if it's not in the new results
         if (
@@ -33,6 +34,7 @@ export function SmartFeaturesContent({
         }
       } catch (error) {
         console.error("Error fetching notes:", error);
+        setNotes([]);
       } finally {
         setIsLoading(false);
       }
