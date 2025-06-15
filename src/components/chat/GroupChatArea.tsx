@@ -40,6 +40,7 @@ export default function GroupChatArea({
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+  const [currentUserProfile, setCurrentUserProfile] = useState<any>(null);
 
   // Fetch initial messages
   useEffect(() => {
@@ -70,6 +71,27 @@ export default function GroupChatArea({
     loadMessages();
   }, [groupId, isMember]);
 
+  // Fetch current user profile for optimistic updates
+  useEffect(() => {
+    const fetchCurrentUserProfile = async () => {
+      try {
+        const { data } = await supabase
+          .from("profiles")
+          .select("full_name, username, avatar_url")
+          .eq("id", currentUserId)
+          .single();
+
+        setCurrentUserProfile(data);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    if (currentUserId) {
+      fetchCurrentUserProfile();
+    }
+  }, [currentUserId, supabase]);
+
   // Subscribe to new messages
   useEffect(() => {
     if (!isMember) return;
@@ -91,23 +113,38 @@ export default function GroupChatArea({
               .from("group_messages")
               .select(
                 `
-                id, content, created_at, user_id,
-                profile:profiles(full_name, username, avatar_url)
-              `,
+              id, content, created_at, user_id,
+              profile:profiles(full_name, username, avatar_url)
+            `,
               )
               .eq("id", payload.new.id)
               .single();
 
             if (data) {
-              setMessages((prev) => [
-                ...prev,
-                {
-                  ...data,
-                  profile: Array.isArray(data.profile)
-                    ? data.profile[0]
-                    : data.profile,
-                },
-              ]);
+              const newMessage = {
+                ...data,
+                profile: Array.isArray(data.profile)
+                  ? data.profile[0]
+                  : data.profile,
+              };
+
+              setMessages((prev) => {
+                // Check if message already exists (avoid duplicates)
+                const exists = prev.some((msg) => msg.id === newMessage.id);
+                if (exists) return prev;
+
+                // Remove any optimistic messages from the same user with similar content
+                const filtered = prev.filter(
+                  (msg) =>
+                    !(
+                      msg.id.startsWith("temp-") &&
+                      msg.user_id === newMessage.user_id &&
+                      msg.content === newMessage.content
+                    ),
+                );
+
+                return [...filtered, newMessage];
+              });
             }
           } catch (error) {
             console.error("Error fetching new message details:", error);
@@ -131,13 +168,44 @@ export default function GroupChatArea({
 
     if (!newMessage.trim() || !isMember) return;
 
+    const messageContent = newMessage.trim();
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
+
+    // Create optimistic message
+    const optimisticMessage: Message = {
+      id: tempId,
+      content: messageContent,
+      created_at: new Date().toISOString(),
+      user_id: currentUserId,
+      profile: currentUserProfile || {
+        full_name: "You",
+        username: "you",
+        avatar_url: null,
+      },
+    };
+
+    // Add message immediately (optimistic update)
+    setMessages((prev) => [...prev, optimisticMessage]);
+    setNewMessage("");
+
     try {
       setIsLoading(true);
-      await sendMessage(groupId, newMessage.trim());
-      setNewMessage("");
+      await sendMessage(groupId, messageContent);
+
+      // Remove optimistic message after successful send
+      // The real message will come through the subscription
+      setTimeout(() => {
+        setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
+      }, 1000);
     } catch (error) {
       console.error("Error sending message:", error);
+
+      // Remove failed optimistic message
+      setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
+
+      // Show error and restore message content
       toast.error("Failed to send message");
+      setNewMessage(messageContent);
     } finally {
       setIsLoading(false);
     }
@@ -180,13 +248,15 @@ export default function GroupChatArea({
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex gap-3 ${message.user_id === currentUserId ? "justify-end" : ""}`}
+                className={`flex gap-3 ${message.user_id === currentUserId ? "justify-end" : ""} ${
+                  message.id.startsWith("temp-") ? "opacity-95" : ""
+                }`}
               >
                 {/* Others Avatar */}
                 {message.user_id !== currentUserId && (
                   <Avatar className="h-8 w-8">
                     <AvatarImage
-                      src={message.profile?.avatar_url}
+                      src={message.profile?.avatar_url || "/placeholder.svg"}
                       alt={
                         message.profile?.full_name ||
                         message.profile?.username ||
@@ -238,7 +308,7 @@ export default function GroupChatArea({
                 {message.user_id === currentUserId && (
                   <Avatar className="order-2 h-8 w-8">
                     <AvatarImage
-                      src={message.profile?.avatar_url}
+                      src={message.profile?.avatar_url || "/placeholder.svg"}
                       alt={
                         message.profile?.full_name ||
                         message.profile?.username ||
