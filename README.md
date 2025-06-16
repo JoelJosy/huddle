@@ -33,6 +33,12 @@ A modern, AI-powered learning platform that revolutionizes how students create, 
 - **Intuitive Interface**: Clean, modern UI built with shadcn/ui components
 - **Fast Performance**: Optimized with Next.js 15 and App Router
 
+## 🌐 Live Demo
+
+🔗 **[Deployed Application](https://your-app-url.vercel.app)**
+
+_Experience Huddle in action! Try out the features, create notes, join study groups, and explore AI-powered learning tools._
+
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -67,12 +73,6 @@ A modern, AI-powered learning platform that revolutionizes how students create, 
 - **[PostCSS](https://postcss.org/)** - CSS processing
 
 ## 🚀 Getting Started
-
-## 🌐 Live Demo
-
-🔗 **[Deployed Application](https://your-app-url.vercel.app)**
-
-_Experience Huddle in action! Try out the features, create notes, join study groups, and explore AI-powered learning tools._
 
 ### Prerequisites
 
