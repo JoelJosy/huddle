@@ -198,7 +198,7 @@ export const SmartNotesSelector = memo(function SmartNotesSelector({
         <NotesSearchBar defaultValue={searchQuery} />
 
         {/* Notes List */}
-        <ScrollArea className="h-[500px] pr-4">
+        <ScrollArea className="h-[500px] px-4 pt-4">
           {safeNotes.length === 0 ? (
             <div className="py-8 text-center">
               <FileText className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
@@ -209,7 +209,7 @@ export const SmartNotesSelector = memo(function SmartNotesSelector({
               </p>
             </div>
           ) : (
-            <div className="space-y-3 pr-2">
+            <div className="space-y-3 px-2 pt-2">
               {safeNotes.map((note) => (
                 <NoteCard
                   key={note.id}
