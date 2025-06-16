@@ -51,6 +51,7 @@ A modern, AI-powered learning platform that revolutionizes how students create, 
   - Real-time subscriptions
   - Authentication
   - File storage
+  - Edge Functions for serverless computing
 - **[Supabase Auth](https://supabase.com/auth)** - User authentication with Google OAuth
 
 ### AI & Rich Text
@@ -66,6 +67,12 @@ A modern, AI-powered learning platform that revolutionizes how students create, 
 - **[PostCSS](https://postcss.org/)** - CSS processing
 
 ## 🚀 Getting Started
+
+## 🌐 Live Demo
+
+🔗 **[Deployed Application](https://your-app-url.vercel.app)**
+
+_Experience Huddle in action! Try out the features, create notes, join study groups, and explore AI-powered learning tools._
 
 ### Prerequisites
 
@@ -103,77 +110,25 @@ A modern, AI-powered learning platform that revolutionizes how students create, 
    GEMINI_SECRET_KEY=your_gemini_api_key
    ```
 
-4. **Set up Supabase**
+4. **Set up Supabase Database**
 
-   Run the following SQL commands in your Supabase SQL editor:
+   Apply the database migrations to set up your local Supabase instance:
 
-   ```sql
-   -- Create profiles table
-   CREATE TABLE profiles (
-     id UUID REFERENCES auth.users ON DELETE CASCADE,
-     full_name TEXT,
-     username TEXT UNIQUE,
-     avatar_url TEXT,
-     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-     PRIMARY KEY (id)
-   );
+   ```bash
+   # Navigate to the supabase directory
+   cd supabase
 
-   -- Create subjects table
-   CREATE TABLE subjects (
-     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-     name TEXT NOT NULL UNIQUE,
-     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-   );
+   # Link to your Supabase project
+   npx supabase link --project-ref your-project-id
 
-   -- Create notes table
-   CREATE TABLE notes (
-     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-     title TEXT NOT NULL,
-     excerpt TEXT,
-     content_url TEXT NOT NULL,
-     tags TEXT[] DEFAULT '{}',
-     subject_id UUID REFERENCES subjects(id),
-     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-     visibility TEXT DEFAULT 'public',
-     is_public BOOLEAN DEFAULT true,
-     group_id UUID,
-     word_count INTEGER DEFAULT 0,
-     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-   );
+   # Apply all migrations
+   npx supabase db push
 
-   -- Create study groups table
-   CREATE TABLE study_groups (
-     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-     name TEXT NOT NULL,
-     description TEXT,
-     owner_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-     is_public BOOLEAN DEFAULT true,
-     max_members INTEGER DEFAULT 20,
-     member_count INTEGER DEFAULT 1,
-     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-   );
-
-   -- Create group members table
-   CREATE TABLE group_members (
-     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-     group_id UUID REFERENCES study_groups(id) ON DELETE CASCADE,
-     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-     role TEXT DEFAULT 'member',
-     joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-     last_active TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-     UNIQUE(group_id, user_id)
-   );
-
-   -- Create chat messages table
-   CREATE TABLE chat_messages (
-     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-     group_id UUID REFERENCES study_groups(id) ON DELETE CASCADE,
-     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-     content TEXT NOT NULL,
-     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-   );
+   # Return to project root
+   cd ..
    ```
+
+   Alternatively, you can manually run the SQL commands in your Supabase SQL editor. The migration files are located in `supabase/migrations/`.
 
 5. **Set up Supabase Storage**
 
@@ -229,6 +184,9 @@ huddle/
 │   │   ├── supabase/         # Supabase client configuration
 │   │   └── tiptap/           # TipTap editor utilities
 │   └── providers/            # React context providers
+├── supabase/                 # Supabase configuration and migrations
+│   ├── config.toml          # Supabase local development config
+│   └── migrations/          # Database migration files
 ├── public/                   # Static assets
 ├── components.json           # shadcn/ui configuration
 ├── next.config.ts           # Next.js configuration
@@ -237,6 +195,26 @@ huddle/
 ```
 
 ## 🔧 Key Features Implementation
+
+### Supabase Edge Functions
+
+The platform utilizes Supabase Edge Functions for serverless computing capabilities:
+
+- **AI Processing**: Edge functions handle AI-powered content generation requests
+- **Background Tasks**: Asynchronous processing of large note analysis
+- **API Rate Limiting**: Intelligent throttling of external API calls
+- **Content Optimization**: Server-side processing for better performance
+
+### Performance Optimizations & Caching
+
+Multiple caching strategies are implemented to ensure optimal performance:
+
+- **Database Query Caching**: Frequently accessed data is cached using Supabase's built-in caching
+- **Static Asset Caching**: Images and static content are cached with appropriate headers
+- **Client-side Caching**: React Query for intelligent data fetching and caching
+- **CDN Optimization**: Assets served through Vercel's global CDN
+- **Image Optimization**: Next.js Image component with automatic optimization
+- **Route Pre-loading**: Critical routes are pre-loaded for faster navigation
 
 ### AI-Powered Content Generation
 
@@ -308,13 +286,66 @@ GEMINI_SECRET_KEY=your_gemini_api_key
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
+### Setting Up Local Development
+
+1. **Fork and clone the repository**
+
+   ```bash
+   git clone https://github.com/yourusername/huddle.git
+   cd huddle
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Set up your local Supabase instance**
+
+   ```bash
+   # Install Supabase CLI if you haven't already
+   npm install -g supabase
+
+   # Start local Supabase
+   npx supabase start
+
+   # Apply database migrations
+   npx supabase db push
+   ```
+
+4. **Configure environment variables**
+
+   Create a `.env.local` file with your local Supabase credentials:
+
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_local_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_local_service_role_key
+   GEMINI_SECRET_KEY=your_gemini_api_key
+   ```
+
+5. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+### Database Migrations
+
+All database schema changes are managed through Supabase migrations located in the `supabase/migrations/` folder:
+
+- To create a new migration: `npx supabase migration new your_migration_name`
+- To apply migrations: `npx supabase db push`
+- To reset your local database: `npx supabase db reset`
+
 ### Development Guidelines
 
 1. Follow the existing code style and conventions
-2. Write meaningful commit messages
-3. Add comments for complex logic
-4. Test your changes thoroughly
-5. Update documentation as needed
+2. Add comments for complex logic
+3. Test your changes thoroughly
+4. Update documentation as needed
+5. Run migrations locally before pushing changes
+6. Ensure your changes work with the latest database schema
 
 ## 📄 License
 
