@@ -28,7 +28,7 @@ export async function GET(
   { params }: { params: { noteId: string } },
 ) {
   try {
-    const { noteId } = params;
+    const { noteId } = await params;
 
     if (!noteId || noteId === "undefined" || noteId.trim() === "") {
       return NextResponse.json({ error: "Invalid note ID" }, { status: 400 });
@@ -36,46 +36,39 @@ export async function GET(
 
     const supabase = await createClient();
 
-    const { data: note, error } = await supabase
-      .from("notes")
-      .select(
-        `
-        id,
-        title,
-        excerpt,
-        content_url,
-        tags,
-        created_at,
-        word_count,
-        user_id,
-        subjects(name)
-      `,
-      )
-      .eq("id", noteId)
-      .eq("visibility", "public")
-      .single();
+    const { data, error } = await supabase.rpc("get_note_with_profile", {
+      note_id: noteId,
+    });
 
     if (error) {
       console.error("Error fetching note:", error);
       return NextResponse.json({ error: "Note not found" }, { status: 404 });
     }
 
-    if (!note) {
+    if (!data || data.length === 0) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 });
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("id, full_name, email, username, avatar_url")
-      .eq("id", note.user_id)
-      .single();
+    const noteData = data[0];
 
     const transformedNote: Note = {
-      ...note,
-      subjects: Array.isArray(note.subjects)
-        ? note.subjects[0] || null
-        : note.subjects,
-      profiles: profile || null,
+      id: noteData.id,
+      title: noteData.title,
+      excerpt: noteData.excerpt,
+      content_url: noteData.content_url,
+      tags: noteData.tags,
+      created_at: noteData.created_at,
+      word_count: noteData.word_count,
+      user_id: noteData.user_id,
+      subjects: noteData.subject_name ? { name: noteData.subject_name } : null,
+      profiles: noteData.profile_id
+        ? {
+            full_name: noteData.full_name,
+            email: noteData.email,
+            username: noteData.username,
+            avatar_url: noteData.avatar_url,
+          }
+        : null,
     };
 
     return NextResponse.json(transformedNote, {
@@ -92,105 +85,105 @@ export async function GET(
   }
 }
 
-// PUT /api/notes/[noteId] - Update a specific note
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { noteId: string } },
-) {
-  try {
-    const { noteId } = params;
-    const body = await request.json();
+// // PUT /api/notes/[noteId] - Update a specific note
+// export async function PUT(
+//   request: NextRequest,
+//   { params }: { params: { noteId: string } },
+// ) {
+//   try {
+//     const { noteId } = params;
+//     const body = await request.json();
 
-    if (!noteId || noteId === "undefined" || noteId.trim() === "") {
-      return NextResponse.json({ error: "Invalid note ID" }, { status: 400 });
-    }
+//     if (!noteId || noteId === "undefined" || noteId.trim() === "") {
+//       return NextResponse.json({ error: "Invalid note ID" }, { status: 400 });
+//     }
 
-    // Validate required fields
-    const { title, subject, tags, content, wordCount } = body;
+//     // Validate required fields
+//     const { title, subject, tags, content, wordCount } = body;
 
-    if (
-      !title ||
-      !subject ||
-      !Array.isArray(tags) ||
-      !content ||
-      typeof wordCount !== "number"
-    ) {
-      return NextResponse.json(
-        { error: "Missing or invalid required fields" },
-        { status: 400 },
-      );
-    }
+//     if (
+//       !title ||
+//       !subject ||
+//       !Array.isArray(tags) ||
+//       !content ||
+//       typeof wordCount !== "number"
+//     ) {
+//       return NextResponse.json(
+//         { error: "Missing or invalid required fields" },
+//         { status: 400 },
+//       );
+//     }
 
-    const updateData: UpdateNoteData = {
-      noteId,
-      title,
-      subject,
-      tags,
-      content,
-      excerpt: body.excerpt,
-      wordCount,
-    };
+//     const updateData: UpdateNoteData = {
+//       noteId,
+//       title,
+//       subject,
+//       tags,
+//       content,
+//       excerpt: body.excerpt,
+//       wordCount,
+//     };
 
-    const result = await updateNote(updateData);
+//     const result = await updateNote(updateData);
 
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error("Error in update note API:", error);
+//     return NextResponse.json(result);
+//   } catch (error: any) {
+//     console.error("Error in update note API:", error);
 
-    if (error.message === "User not authenticated") {
-      return NextResponse.json(
-        { error: "User not authenticated" },
-        { status: 401 },
-      );
-    }
+//     if (error.message === "User not authenticated") {
+//       return NextResponse.json(
+//         { error: "User not authenticated" },
+//         { status: 401 },
+//       );
+//     }
 
-    if (error.message === "You don't have permission to edit this note") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+//     if (error.message === "You don't have permission to edit this note") {
+//       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+//     }
 
-    if (error.message.includes("Note not found")) {
-      return NextResponse.json({ error: "Note not found" }, { status: 404 });
-    }
+//     if (error.message.includes("Note not found")) {
+//       return NextResponse.json({ error: "Note not found" }, { status: 404 });
+//     }
 
-    return NextResponse.json(
-      { error: error.message || "Failed to update note" },
-      { status: 500 },
-    );
-  }
-}
+//     return NextResponse.json(
+//       { error: error.message || "Failed to update note" },
+//       { status: 500 },
+//     );
+//   }
+// }
 
-// DELETE /api/notes/[noteId] - Delete a specific note
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { noteId: string } },
-) {
-  try {
-    const { noteId } = params;
+// // DELETE /api/notes/[noteId] - Delete a specific note
+// export async function DELETE(
+//   request: NextRequest,
+//   { params }: { params: { noteId: string } },
+// ) {
+//   try {
+//     const { noteId } = params;
 
-    if (!noteId || noteId === "undefined" || noteId.trim() === "") {
-      return NextResponse.json({ error: "Invalid note ID" }, { status: 400 });
-    }
+//     if (!noteId || noteId === "undefined" || noteId.trim() === "") {
+//       return NextResponse.json({ error: "Invalid note ID" }, { status: 400 });
+//     }
 
-    const result = await deleteNote(noteId);
+//     const result = await deleteNote(noteId);
 
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error("Error in delete note API:", error);
+//     return NextResponse.json(result);
+//   } catch (error: any) {
+//     console.error("Error in delete note API:", error);
 
-    if (error.message === "User not authenticated") {
-      return NextResponse.json(
-        { error: "User not authenticated" },
-        { status: 401 },
-      );
-    }
+//     if (error.message === "User not authenticated") {
+//       return NextResponse.json(
+//         { error: "User not authenticated" },
+//         { status: 401 },
+//       );
+//     }
 
-    if (error.message.includes("Note not found")) {
-      return NextResponse.json({ error: "Note not found" }, { status: 404 });
-    }
+//     if (error.message.includes("Note not found")) {
+//       return NextResponse.json({ error: "Note not found" }, { status: 404 });
+//     }
 
-    return NextResponse.json(
-      { error: error.message || "Failed to delete note" },
-      { status: 500 },
-    );
-  }
-}
+//     return NextResponse.json(
+//       { error: error.message || "Failed to delete note" },
+//       { status: 500 },
+//     );
+//   }
+// }

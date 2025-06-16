@@ -44,7 +44,7 @@ export default function EditNotePage() {
 
         // Fetch note metadata
         const note = await fetchNoteById(noteId);
-
+        console.log("Fetched note:", note);
         if (!note) {
           setNoteNotFound(true);
           return;

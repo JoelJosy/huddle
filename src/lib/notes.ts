@@ -188,47 +188,40 @@ export async function fetchNoteById(noteId: string): Promise<Note | null> {
   }
 
   try {
-    const { data: note, error } = await supabase
-      .from("notes")
-      .select(
-        `
-        id,
-        title,
-        excerpt,
-        content_url,
-        tags,
-        created_at,
-        word_count,
-        user_id,
-        subjects(name)
-      `,
-      )
-      .eq("id", noteId)
-      .eq("visibility", "public")
-      .single();
+    const { data, error } = await supabase.rpc("get_note_with_profile", {
+      note_id: noteId,
+    });
 
     if (error) {
       console.error("Error fetching note:", error);
       return null;
     }
 
-    if (!note) {
+    if (!data || data.length === 0) {
       console.log("No note found with ID:", noteId);
       return null;
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("id, full_name, email, username, avatar_url")
-      .eq("id", note.user_id)
-      .single();
+    const noteData = data[0];
 
     const transformedNote: Note = {
-      ...note,
-      subjects: Array.isArray(note.subjects)
-        ? note.subjects[0] || null
-        : note.subjects,
-      profiles: profile || null,
+      id: noteData.id,
+      title: noteData.title,
+      excerpt: noteData.excerpt,
+      content_url: noteData.content_url,
+      tags: noteData.tags,
+      created_at: noteData.created_at,
+      word_count: noteData.word_count,
+      user_id: noteData.user_id,
+      subjects: noteData.subject_name ? { name: noteData.subject_name } : null,
+      profiles: noteData.profile_id
+        ? {
+            full_name: noteData.full_name,
+            email: noteData.email,
+            username: noteData.username,
+            avatar_url: noteData.avatar_url,
+          }
+        : null,
     };
 
     return transformedNote;
