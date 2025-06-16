@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import {
   Card,
   CardContent,
@@ -25,7 +26,9 @@ interface SmartFeatureCardsProps {
   selectedNote: Note | null;
 }
 
-export function SmartFeatureCards({ selectedNote }: SmartFeatureCardsProps) {
+export const SmartFeatureCards = memo(function SmartFeatureCards({
+  selectedNote,
+}: SmartFeatureCardsProps) {
   const features = [
     {
       id: "summarize",
@@ -133,4 +136,4 @@ export function SmartFeatureCards({ selectedNote }: SmartFeatureCardsProps) {
       )}
     </div>
   );
-}
+});

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { type Note, fetchPublicNotesEdgeClient } from "@/lib/notes";
 import { SmartNotesSelector } from "@/components/smart/SmartNotesSelector";
 import { SmartFeatureCards } from "@/components/smart/SmartFeatureCards";
@@ -17,6 +17,10 @@ export function SmartFeaturesContent({
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleNoteSelect = useCallback((note: Note) => {
+    setSelectedNote(note);
+  }, []);
 
   useEffect(() => {
     const loadNotes = async () => {
@@ -41,7 +45,7 @@ export function SmartFeaturesContent({
     };
 
     loadNotes();
-  }, [searchQuery, selectedNote]);
+  }, [searchQuery]);
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -50,7 +54,7 @@ export function SmartFeaturesContent({
         <SmartNotesSelector
           notes={notes}
           selectedNote={selectedNote}
-          onNoteSelect={setSelectedNote}
+          onNoteSelect={handleNoteSelect}
           searchQuery={searchQuery}
           isLoading={isLoading}
         />
