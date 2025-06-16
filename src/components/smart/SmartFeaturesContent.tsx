@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { fetchPublicNotes, type Note, fetchPublicNotesEdge } from "@/lib/notes";
+import { type Note, fetchPublicNotesEdge } from "@/lib/notes";
 import { SmartNotesSelector } from "@/components/smart/SmartNotesSelector";
 import { SmartFeatureCards } from "@/components/smart/SmartFeatureCards";
 

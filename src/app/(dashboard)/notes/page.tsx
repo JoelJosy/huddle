@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Suspense } from "react";
 import { NotesSearchBar } from "@/components/notes/NotesSearchBar";
-import { fetchPublicNotes } from "@/lib/notes";
 import Link from "next/link";
 import { NotesGrid } from "@/components/notes/NotesGrid";
 import getCurrentUserId from "@/lib/accountActions";
