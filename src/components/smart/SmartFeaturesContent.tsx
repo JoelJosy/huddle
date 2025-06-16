@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { fetchPublicNotes, type Note } from "@/lib/notes";
+import { fetchPublicNotes, type Note, fetchPublicNotesEdge } from "@/lib/notes";
 import { SmartNotesSelector } from "@/components/smart/SmartNotesSelector";
 import { SmartFeatureCards } from "@/components/smart/SmartFeatureCards";
 
@@ -22,13 +22,13 @@ export function SmartFeaturesContent({
     const loadNotes = async () => {
       setIsLoading(true);
       try {
-        const result = await fetchPublicNotes(searchQuery);
+        const result = await fetchPublicNotesEdge(searchQuery, 1, 5);
         const fetchedNotes = result.data;
         setNotes(fetchedNotes);
         // Clear selected note if it's not in the new results
         if (
           selectedNote &&
-          !fetchedNotes.find((note) => note.id === selectedNote.id)
+          !fetchedNotes.find((note: Note) => note.id === selectedNote.id)
         ) {
           setSelectedNote(null);
         }

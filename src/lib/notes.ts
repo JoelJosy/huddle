@@ -100,14 +100,18 @@ export async function fetchPublicNotes(
   };
 }
 
-export async function fetchPublicNotesEdge(search?: string, page = 1) {
+export async function fetchPublicNotesEdge(
+  search?: string,
+  page = 1,
+  pageSize = 4,
+) {
   const supabase = createClient();
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
   const res = await fetch(
-    `https://ocvyaicrbpqrhmkgrlay.supabase.co/functions/v1/public-notes?search=${encodeURIComponent(search || "")}&page=${page}`,
+    `https://ocvyaicrbpqrhmkgrlay.supabase.co/functions/v1/public-notes?search=${encodeURIComponent(search || "")}&page=${page}&pageSize=${pageSize}`,
     {
       headers: {
         Authorization: `Bearer ${session?.access_token}`,

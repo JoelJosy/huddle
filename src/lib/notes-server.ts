@@ -1,7 +1,11 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidateTag } from "next/cache";
 
-export async function fetchPublicNotesEdgeServer(search?: string, page = 1) {
+export async function fetchPublicNotesEdgeServer(
+  search?: string,
+  page = 1,
+  pageSize = 4,
+) {
   const supabase = await createClient();
 
   const {
@@ -9,9 +13,6 @@ export async function fetchPublicNotesEdgeServer(search?: string, page = 1) {
   } = await supabase.auth.getSession();
 
   const accessToken = session?.access_token;
-
-  // Add pagination parameter
-  const pageSize = 4;
 
   const res = await fetch(
     `https://ocvyaicrbpqrhmkgrlay.supabase.co/functions/v1/public-notes?search=${encodeURIComponent(
