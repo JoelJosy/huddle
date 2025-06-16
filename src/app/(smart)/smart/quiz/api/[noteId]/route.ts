@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { fetchNoteById, fetchNoteContent } from "@/lib/notes";
+import {
+  fetchNoteByIdEdgeServer,
+  fetchNoteContentEdgeServer,
+} from "@/lib/notes-server";
 import { parseToText } from "@/utils/tiptap/parseToText";
 import { generateQuiz } from "@/utils/gemini/generateQuiz";
 
@@ -9,11 +12,11 @@ export async function GET(
 ) {
   const { noteId } = await context.params;
 
-  const note = await fetchNoteById(noteId);
+  const note = await fetchNoteByIdEdgeServer(noteId);
   if (!note)
     return NextResponse.json({ error: "Note not found" }, { status: 404 });
 
-  const json = await fetchNoteContent(note.content_url);
+  const json = await fetchNoteContentEdgeServer(note.content_url);
   if (!json)
     return NextResponse.json({ error: "Content not found" }, { status: 404 });
 

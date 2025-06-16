@@ -8,7 +8,10 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import NoteViewer from "@/components/notes/NoteViewer";
-import { fetchNoteById, fetchNoteContent } from "@/lib/notes";
+import {
+  fetchNoteByIdEdgeServer,
+  fetchNoteContentEdgeServer,
+} from "@/lib/notes-server";
 import { createClient } from "@/utils/supabase/server";
 
 interface NotePageProps {
@@ -22,7 +25,7 @@ async function NoteContent({ noteId }: { noteId: string }) {
     notFound();
   }
 
-  const note = await fetchNoteById(noteId);
+  const note = await fetchNoteByIdEdgeServer(noteId);
 
   if (!note) {
     console.error("Note not found for ID:", noteId);
@@ -37,7 +40,7 @@ async function NoteContent({ noteId }: { noteId: string }) {
   const isOwner = user && user.id === note.user_id;
 
   // Fetch the actual content from storage
-  const content = await fetchNoteContent(note.content_url);
+  const content = await fetchNoteContentEdgeServer(note.content_url);
 
   const getUserDisplayName = () => {
     if (note.profiles?.full_name) {
@@ -103,7 +106,7 @@ async function NoteContent({ noteId }: { noteId: string }) {
                   <div className="space-y-2">
                     <h3 className="text-sm font-medium">Tags</h3>
                     <div className="flex flex-wrap gap-2">
-                      {note.tags.map((tag, index) => (
+                      {note.tags.map((tag: string, index: number) => (
                         <Badge
                           key={index}
                           variant="outline"

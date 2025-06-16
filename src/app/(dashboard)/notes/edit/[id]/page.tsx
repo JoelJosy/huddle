@@ -13,7 +13,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 import NoteEditor from "@/components/notes/NoteEditor";
 import { updateNote } from "@/lib/noteActions";
-import { fetchNoteById, fetchNoteContent } from "@/lib/notes";
+import {
+  fetchNoteByIdEdgeClient,
+  fetchNoteContentEdgeClient,
+} from "@/lib/notes";
 
 export default function EditNotePage() {
   const router = useRouter();
@@ -43,7 +46,7 @@ export default function EditNotePage() {
         setIsLoadingNote(true);
 
         // Fetch note metadata
-        const note = await fetchNoteById(noteId);
+        const note = await fetchNoteByIdEdgeClient(noteId);
         console.log("Fetched note:", note);
         if (!note) {
           setNoteNotFound(true);
@@ -56,7 +59,7 @@ export default function EditNotePage() {
         setTags(note.tags || []);
 
         // Fetch and load note content
-        const content = await fetchNoteContent(note.content_url);
+        const content = await fetchNoteContentEdgeClient(note.content_url);
 
         if (content) {
           setNoteContent(content);

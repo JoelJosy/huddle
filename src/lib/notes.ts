@@ -29,7 +29,7 @@ export interface PaginatedResult<T> {
   hasPreviousPage: boolean;
 }
 
-export async function fetchPublicNotesEdge(
+export async function fetchPublicNotesEdgeClient(
   search?: string,
   page = 1,
   pageSize = 4,
@@ -211,4 +211,71 @@ export async function fetchNoteContent(contentUrl: string): Promise<any> {
     console.error("Error parsing note content:", error);
     return null;
   }
+}
+
+export async function fetchNoteByIdEdgeClient(noteId: string) {
+  const supabase = createClient();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const accessToken = session?.access_token;
+
+  const res = await fetch(
+    `https://ocvyaicrbpqrhmkgrlay.supabase.co/functions/v1/fetch-note-by-id?id=${encodeURIComponent(noteId)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      // Client-side caching
+      cache: "force-cache",
+    },
+  );
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("[fetchNoteByIdEdgeClient] Edge Function error", errorText);
+
+    if (res.status === 404) {
+      throw new Error("Note not found");
+    }
+    throw new Error("Failed to fetch note");
+  }
+
+  return res.json();
+}
+
+export async function fetchNoteContentEdgeClient(contentUrl: string) {
+  const supabase = createClient();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const accessToken = session?.access_token;
+
+  const res = await fetch(
+    `https://ocvyaicrbpqrhmkgrlay.supabase.co/functions/v1/fetch-note-content?url=${encodeURIComponent(contentUrl)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      // Client-side caching - note content rarely changes
+      cache: "force-cache",
+    },
+  );
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error(
+      "[fetchNoteContentEdgeClient] Edge Function error",
+      errorText,
+    );
+    throw new Error("Failed to fetch note content");
+  }
+
+  return res.json();
 }
