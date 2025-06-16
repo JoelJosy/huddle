@@ -371,9 +371,3 @@ If you have any questions or suggestions, feel free to reach out:
 - **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/joel-josy/)
 
 ---
-
-**Built with ❤️ for the learning community**
-
-```
-
-```

@@ -256,7 +256,7 @@ export default function GroupChatArea({
                 {message.user_id !== currentUserId && (
                   <Avatar className="h-8 w-8">
                     <AvatarImage
-                      src={message.profile?.avatar_url || "/placeholder.svg"}
+                      src={message.profile?.avatar_url}
                       alt={
                         message.profile?.full_name ||
                         message.profile?.username ||
@@ -308,7 +308,7 @@ export default function GroupChatArea({
                 {message.user_id === currentUserId && (
                   <Avatar className="order-2 h-8 w-8">
                     <AvatarImage
-                      src={message.profile?.avatar_url || "/placeholder.svg"}
+                      src={message.profile?.avatar_url}
                       alt={
                         message.profile?.full_name ||
                         message.profile?.username ||
