@@ -45,6 +45,11 @@ export async function fetchPublicNotesEdge(
       headers: {
         Authorization: `Bearer ${session?.access_token}`,
       },
+      // Add Next.js caching
+      next: {
+        revalidate: 300, // 5 minutes
+        tags: ["public-notes", `public-notes-page-${page}`],
+      },
     },
   );
 
