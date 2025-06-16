@@ -35,7 +35,7 @@ A modern, AI-powered learning platform that revolutionizes how students create, 
 
 ## 🌐 Live Demo
 
-🔗 **[Deployed Application](https://your-app-url.vercel.app)**
+🔗 **[Deployed Application](https://huddle-project-jol.vercel.app)**
 
 _Experience Huddle in action! Try out the features, create notes, join study groups, and explore AI-powered learning tools._
 

@@ -231,7 +231,7 @@ export default function GroupChatArea({
   }
 
   return (
-    <div className="flex h-full max-h-[100dvh] flex-col overflow-hidden bg-white">
+    <div className="bg-card flex h-full max-h-[100dvh] flex-col overflow-hidden">
       <ScrollArea className="flex-1 overflow-y-auto px-4 py-2">
         {isLoadingMessages ? (
           <div className="flex h-full items-center justify-center">
@@ -286,7 +286,7 @@ export default function GroupChatArea({
                     className={`rounded-lg p-3 ${
                       message.user_id === currentUserId
                         ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
+                        : "bg-secondary"
                     }`}
                   >
                     {/* Message Content */}
