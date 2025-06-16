@@ -8,6 +8,7 @@ import Link from "next/link";
 import { NotesGrid } from "@/components/notes/NotesGrid";
 import getCurrentUserId from "@/lib/accountActions";
 import { PaginationControls } from "@/components/shared/pagination-controls";
+import { fetchPublicNotesEdgeServer } from "@/lib/notes-server";
 
 interface NotesPageProps {
   searchParams: {
@@ -37,7 +38,7 @@ async function NotesContent({
     );
   }
 
-  const result = await fetchPublicNotes(searchQuery, currentPage);
+  const result = await fetchPublicNotesEdgeServer(searchQuery, currentPage);
 
   return (
     <>

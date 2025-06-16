@@ -100,6 +100,29 @@ export async function fetchPublicNotes(
   };
 }
 
+export async function fetchPublicNotesEdge(search?: string, page = 1) {
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const res = await fetch(
+    `https://ocvyaicrbpqrhmkgrlay.supabase.co/functions/v1/public-notes?search=${encodeURIComponent(search || "")}&page=${page}`,
+    {
+      headers: {
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    },
+  );
+
+  if (!res.ok) {
+    console.error("[fetchPublicNotes] Edge Function error", await res.text());
+    throw new Error("Failed to fetch public notes");
+  }
+
+  return res.json();
+}
+
 export async function fetchUserNotes(
   userId: string,
   searchQuery?: string,
