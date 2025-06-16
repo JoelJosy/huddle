@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { invalidatePublicNotesCache } from "@/lib/notes-server";
 
 export interface CreateNoteData {
   title: string;
@@ -96,6 +97,8 @@ export async function createNote(data: CreateNoteData) {
       throw new Error(`Failed to create note: ${noteError.message}`);
     }
 
+    await invalidatePublicNotesCache();
+
     revalidatePath("/notes");
     return { success: true, noteId: note.id };
   } catch (error) {
@@ -140,6 +143,8 @@ export async function deleteNote(noteId: string) {
     if (deleteError) {
       throw new Error(`Failed to delete note: ${deleteError.message}`);
     }
+
+    // await invalidatePublicNotesCache();
 
     // 4. Revalidate frontend cache/path
     revalidatePath("/notes");
@@ -263,7 +268,7 @@ export async function updateNote(data: UpdateNoteData) {
         deleteOldContentError,
       );
     }
-
+    await invalidatePublicNotesCache();
     revalidatePath("/notes");
     revalidatePath(`/notes/${data.noteId}`);
     return { success: true, noteId: note.id };

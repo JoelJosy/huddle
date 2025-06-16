@@ -108,6 +108,13 @@ export default async function NotesPage({ searchParams }: NotesPageProps) {
           currentPage={currentPage}
         />
       </Suspense>
+      {/* Prefetch next page in the background */}
+      {userId && (
+        <link
+          rel="prefetch"
+          href={`/api/notes/public?page=${currentPage + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ""}`}
+        />
+      )}
     </div>
   );
 }

@@ -1,22 +1,31 @@
 import { createClient } from "@/utils/supabase/server";
+import { revalidateTag } from "next/cache";
 
 export async function fetchPublicNotesEdgeServer(search?: string, page = 1) {
-  const supabase = await createClient(); // no await, no arguments
+  const supabase = await createClient();
 
   const {
     data: { session },
-  } = await supabase.auth.getSession(); // now this works
+  } = await supabase.auth.getSession();
 
   const accessToken = session?.access_token;
+
+  // Add pagination parameter
+  const pageSize = 4;
 
   const res = await fetch(
     `https://ocvyaicrbpqrhmkgrlay.supabase.co/functions/v1/public-notes?search=${encodeURIComponent(
       search || "",
-    )}&page=${page}`,
+    )}&page=${page}&pageSize=${pageSize}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
+      },
+      // Add Next.js caching
+      next: {
+        revalidate: 300, // 5 minutes
+        tags: ["public-notes", `public-notes-page-${page}`],
       },
     },
   );
@@ -30,4 +39,9 @@ export async function fetchPublicNotesEdgeServer(search?: string, page = 1) {
   }
 
   return res.json();
+}
+
+// Add this function to invalidate cache when notes change
+export async function invalidatePublicNotesCache() {
+  revalidateTag("public-notes");
 }
