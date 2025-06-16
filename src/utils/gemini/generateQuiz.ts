@@ -10,7 +10,7 @@ export async function generateQuiz(text: string): Promise<any[]> {
         - A question string
         - 4 answer options (as strings)
         - The correct answer (exact string that matches one of the options)
-        
+        Try to make a different quiz each time, even if the input text is the same.
         Academic notes content:
         ${text}`,
 
