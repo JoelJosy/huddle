@@ -123,7 +123,7 @@ const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
             </div>
 
             {editor && (
-              <div className="text-muted-foreground mt-4 flex-shrink-0 rounded-b-lg border-t border-r border-b border-l bg-white px-3 py-2 text-right text-sm">
+              <div className="text-muted-foreground bg-secondary-background mt-4 flex-shrink-0 rounded-b-lg border-t border-r border-b border-l px-3 py-2 text-right text-sm">
                 {editor.storage.characterCount.words()} words,{" "}
                 {editor.storage.characterCount.characters()} characters
               </div>

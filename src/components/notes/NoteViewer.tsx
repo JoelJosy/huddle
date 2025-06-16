@@ -97,7 +97,7 @@ const NoteViewer: React.FC<NoteViewerProps> = ({ content, wordCount }) => {
 
           {/* Move word count inside CardContent and stick to bottom */}
           {!isLoading && editor && (
-            <div className="text-muted-foreground flex-shrink-0 border-t bg-white px-3 py-2 text-right text-sm">
+            <div className="text-muted-foreground bg-secondary-background flex-shrink-0 border-t px-3 py-2 text-right text-sm">
               {wordCount || editor.storage.characterCount.words()} words,{" "}
               {editor.storage.characterCount.characters()} characters
             </div>
