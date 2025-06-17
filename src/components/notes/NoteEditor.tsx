@@ -98,9 +98,9 @@ const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
     }));
 
     return (
-      <div className="space-y-6 lg:col-span-8">
-        <Card className="flex h-[600px] flex-col">
-          <CardHeader className="flex-shrink-0">
+      <div className="space-y-6 lg:col-span-9">
+        <Card className="flex h-[750px] flex-col">
+          <CardHeader className="flex-shrink-0 pb-2">
             <CardTitle className="flex items-center justify-between">
               <span>Content</span>
             </CardTitle>
@@ -123,9 +123,8 @@ const NoteEditor = forwardRef<NoteEditorRef, NoteEditorProps>(
             </div>
 
             {editor && (
-              <div className="text-muted-foreground bg-secondary-background mt-4 flex-shrink-0 rounded-b-lg border-t border-r border-b border-l px-3 py-2 text-right text-sm">
-                {editor.storage.characterCount.words()} words,{" "}
-                {editor.storage.characterCount.characters()} characters
+              <div className="text-muted-foreground bg-background/50 mt-4 flex-shrink-0 rounded-b-lg border-t border-r border-b border-l px-3 py-1 text-right text-xs">
+                {editor.storage.characterCount.words()} words
               </div>
             )}
           </CardContent>

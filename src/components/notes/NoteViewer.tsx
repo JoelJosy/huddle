@@ -62,13 +62,13 @@ const NoteViewer: React.FC<NoteViewerProps> = ({ content, wordCount }) => {
   }, [content, editor]);
 
   return (
-    <div className="space-y-6 lg:col-span-8">
-      <Card className="flex h-[600px] flex-col">
-        <CardHeader className="flex-shrink-0">
+    <div className="space-y-6 lg:col-span-9">
+      <Card className="flex h-[750px] flex-col">
+        <CardHeader className="flex-shrink-0 pb-2">
           <CardTitle className="flex items-center justify-between">
             <span>Content</span>
             {!isLoading && (
-              <div className="text-muted-foreground text-sm">
+              <div className="text-muted-foreground text-xs">
                 {wordCount || editor?.storage.characterCount.words() || 0} words
               </div>
             )}
@@ -92,14 +92,6 @@ const NoteViewer: React.FC<NoteViewerProps> = ({ content, wordCount }) => {
                   />
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Move word count inside CardContent and stick to bottom */}
-          {!isLoading && editor && (
-            <div className="text-muted-foreground bg-secondary-background flex-shrink-0 border-t px-3 py-2 text-right text-sm">
-              {wordCount || editor.storage.characterCount.words()} words,{" "}
-              {editor.storage.characterCount.characters()} characters
             </div>
           )}
         </CardContent>

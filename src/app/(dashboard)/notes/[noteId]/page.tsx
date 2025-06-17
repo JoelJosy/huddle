@@ -84,7 +84,7 @@ async function NoteContent({ noteId }: { noteId: string }) {
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Left Section - Note Details */}
-          <div className="space-y-6 lg:col-span-4">
+          <div className="space-y-6 lg:col-span-3">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -233,12 +233,12 @@ export default async function NotePage(props: NotePageProps) {
               <div className="bg-muted h-4 w-48 animate-pulse rounded" />
             </div>
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-              <div className="space-y-6 lg:col-span-4">
+              <div className="space-y-6 lg:col-span-3">
                 <Card className="h-64 animate-pulse">
                   <div className="bg-muted h-full rounded-lg" />
                 </Card>
               </div>
-              <div className="lg:col-span-8">
+              <div className="lg:col-span-9">
                 <Card className="h-96 animate-pulse">
                   <div className="bg-muted h-full rounded-lg" />
                 </Card>

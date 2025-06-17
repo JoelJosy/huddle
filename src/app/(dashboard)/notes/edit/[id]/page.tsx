@@ -217,7 +217,7 @@ export default function EditNotePage() {
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-            <div className="space-y-6 lg:col-span-4">
+            <div className="space-y-6 lg:col-span-3">
               <Card>
                 <CardHeader>
                   <CardTitle>Note Details</CardTitle>
