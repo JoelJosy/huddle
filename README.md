@@ -2,44 +2,64 @@
 
 A modern, AI-powered learning platform that revolutionizes how students create, share, and interact with educational content. Built with Next.js 15, Supabase, and Google's Gemini AI.
 
-## ✨ Features
+## What is Huddle?
 
-### 📝 Smart Note Management
+Huddle is an intelligent study platform that combines note-taking, AI-powered learning tools, and collaborative study groups. Create rich notes, generate AI summaries and quizzes, visualize content as mind maps, and collaborate with peers in real-time chat groups.
+
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/yourusername/huddle.git
+cd huddle
+npm install
+# Set up your .env.local file (see SETUP.md for details)
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to start using Huddle!
+
+## ✨ Key Features
+
+<details>
+<summary>📝 Smart Note Management</summary>
 
 - **Rich Text Editor**: Create and edit notes with a powerful TipTap-based editor
-- **Real-time Collaboration**: Share notes publicly or keep them private
+- **Real-time Collaboration**: Share notes publicly
 - **Advanced Search**: Find notes quickly with intelligent search functionality
 - **Subject Organization**: Categorize notes by subjects for better organization
-- **Word Count Tracking**: Monitor your writing progress with real-time statistics
+- **PDF Uploads**: Extract text from pdf files and use AI to prettify it
+</details>
 
-### 🤖 AI-Powered Learning Tools
+<details>
+<summary>🤖 AI-Powered Learning Tools</summary>
 
-- **AI Summarization**: Generate concise summaries of your notes using Google Gemini AI
+- **AI Summarization**: Generate concise summaries using Google Gemini AI
 - **Interactive Quizzes**: Automatically create multiple-choice quizzes from your content
-- **Mind Maps**: Visualize your notes as interactive mind maps for better understanding
-- **Smart Content Analysis**: Extract key concepts and relationships from your notes
+- **Mind Maps**: Visualize your notes as interactive mind maps
+- **Smart Content Analysis**: Extract key concepts and relationships
+</details>
 
-### 👥 Collaborative Study Groups
+<details>
+<summary>👥 Collaborative Study Groups</summary>
 
 - **Group Creation**: Create public or private study groups
 - **Real-time Chat**: Communicate with group members in dedicated chat rooms
-- **Member Management**: Invite students and manage group permissions
 - **Group Discovery**: Find and join public study groups based on your interests
+</details>
 
-### 🎨 Modern User Experience
+<details>
+<summary>🎨 Modern User Experience</summary>
 
 - **Dark/Light Mode**: Toggle between themes for comfortable studying
-- **Responsive Design**: Seamless experience across desktop, tablet, and mobile devices
+- **Responsive Design**: Seamless experience across all devices
 - **Intuitive Interface**: Clean, modern UI built with shadcn/ui components
 - **Fast Performance**: Optimized with Next.js 15 and App Router
-
-## 🌐 Live Demo
-
-🔗 **[Deployed Application](https://huddle-project-jol.vercel.app)**
-
-_Experience Huddle in action! Try out the features, create notes, join study groups, and explore AI-powered learning tools._
+</details>
 
 ## 🛠️ Tech Stack
+
+<details>
+<summary>View Tech Stack Details</summary>
 
 ### Frontend
 
@@ -48,16 +68,10 @@ _Experience Huddle in action! Try out the features, create notes, join study gro
 - **[TypeScript](https://www.typescriptlang.org/)** - Type safety
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
 - **[shadcn/ui](https://ui.shadcn.com/)** - Modern UI components
-- **[Lucide React](https://lucide.dev/)** - Beautiful icons
 
 ### Backend & Database
 
-- **[Supabase](https://supabase.com/)** - Backend-as-a-Service
-  - PostgreSQL database
-  - Real-time subscriptions
-  - Authentication
-  - File storage
-  - Edge Functions for serverless computing
+- **[Supabase](https://supabase.com/)** - Backend-as-a-Service with PostgreSQL, real-time subscriptions, authentication, and file storage
 - **[Supabase Auth](https://supabase.com/auth)** - User authentication with Google OAuth
 
 ### AI & Rich Text
@@ -66,97 +80,25 @@ _Experience Huddle in action! Try out the features, create notes, join study gro
 - **[TipTap](https://tiptap.dev/)** - Rich text editor
 - **[React Flow](https://reactflow.dev/)** - Interactive mind map visualization
 
-### Development Tools
-
-- **[ESLint](https://eslint.org/)** - Code linting
-- **[Prettier](https://prettier.io/)** - Code formatting
-- **[PostCSS](https://postcss.org/)** - CSS processing
+</details>
 
 ## 🚀 Getting Started
 
-### Prerequisites
+For detailed installation and setup instructions, see **[SETUP.md](SETUP.md)**.
 
-- Node.js 18+
-- npm or yarn
-- Supabase account
-- Google AI API key
+### Quick Setup
 
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/yourusername/huddle.git
-   cd huddle
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-
-   Create a `.env.local` file in the root directory:
-
-   ```env
-   # Supabase Configuration
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-
-   # Google AI Configuration
-   GEMINI_SECRET_KEY=your_gemini_api_key
-   ```
-
-4. **Set up Supabase Database**
-
-   Apply the database migrations to set up your local Supabase instance:
-
-   ```bash
-   # Navigate to the supabase directory
-   cd supabase
-
-   # Link to your Supabase project
-   npx supabase link --project-ref your-project-id
-
-   # Apply all migrations
-   npx supabase db push
-
-   # Return to project root
-   cd ..
-   ```
-
-   Alternatively, you can manually run the SQL commands in your Supabase SQL editor. The migration files are located in `supabase/migrations/`.
-
-5. **Set up Supabase Storage**
-
-   Create the following storage buckets in your Supabase dashboard:
-
-   - `note-contents` (for storing note content files)
-   - `profile-avatars` (for storing avatar images to prevent google rate limiting)
-   - `my-images` (for other images)
-
-6. **Configure Authentication**
-
-   In your Supabase dashboard:
-
-   - Enable Google OAuth provider
-   - Add your site URL to allowed redirect URLs
-   - Configure email templates if needed
-
-7. **Run the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-8. **Open your browser**
-
-   Navigate to [http://localhost:3000](http://localhost:3000)
+1. Clone the repository and install dependencies
+2. Set up your Supabase project and get API keys
+3. Configure Google AI API key
+4. Set up environment variables in `.env.local`
+5. Run database migrations
+6. Start the development server with `npm run dev`
 
 ## 📁 Project Structure
+
+<details>
+<summary>View Project Structure</summary>
 
 ```
 huddle/
@@ -164,61 +106,30 @@ huddle/
 │   ├── app/                    # Next.js App Router pages
 │   │   ├── (auth)/            # Authentication pages
 │   │   ├── (dashboard)/       # Main dashboard pages
-│   │   ├── (smart)/           # AI features pages
-│   │   └── globals.css        # Global styles
+│   │   └── (smart)/           # AI features pages
 │   ├── components/            # Reusable React components
 │   │   ├── ui/               # shadcn/ui components
 │   │   ├── auth/             # Authentication components
 │   │   ├── chat/             # Chat functionality
 │   │   ├── groups/           # Study groups components
 │   │   ├── notes/            # Note management components
-│   │   ├── smart/            # AI features components
-│   │   └── layout/           # Layout components
+│   │   └── smart/            # AI features components
 │   ├── lib/                  # Utility functions and actions
-│   │   ├── accountActions.ts # User account operations
-│   │   ├── groupActions.ts   # Study group operations
-│   │   ├── noteActions.ts    # Note CRUD operations
-│   │   └── utils.ts          # General utilities
-│   ├── utils/                # External service utilities
-│   │   ├── gemini/           # Google Gemini AI integration
-│   │   ├── supabase/         # Supabase client configuration
-│   │   └── tiptap/           # TipTap editor utilities
-│   └── providers/            # React context providers
+│   └── utils/                # External service utilities
 ├── supabase/                 # Supabase configuration and migrations
-│   ├── config.toml          # Supabase local development config
-│   └── migrations/          # Database migration files
-├── public/                   # Static assets
-├── components.json           # shadcn/ui configuration
-├── next.config.ts           # Next.js configuration
-├── tailwind.config.ts       # Tailwind CSS configuration
-└── package.json             # Dependencies and scripts
+└── public/                   # Static assets
 ```
+
+</details>
 
 ## 🔧 Key Features Implementation
 
-### Supabase Edge Functions
-
-The platform utilizes Supabase Edge Functions for serverless computing capabilities:
-
-- **AI Processing**: Edge functions handle AI-powered content generation requests
-- **Background Tasks**: Asynchronous processing of large note analysis
-- **API Rate Limiting**: Intelligent throttling of external API calls
-- **Content Optimization**: Server-side processing for better performance
-
-### Performance Optimizations & Caching
-
-Multiple caching strategies are implemented to ensure optimal performance:
-
-- **Database Query Caching**: Frequently accessed data is cached using Supabase's built-in caching
-- **Static Asset Caching**: Images and static content are cached with appropriate headers
-- **Client-side Caching**: React Query for intelligent data fetching and caching
-- **CDN Optimization**: Assets served through Vercel's global CDN
-- **Image Optimization**: Next.js Image component with automatic optimization
-- **Route Pre-loading**: Critical routes are pre-loaded for faster navigation
+<details>
+<summary>Technical Implementation Details</summary>
 
 ### AI-Powered Content Generation
 
-The platform leverages Google's Gemini AI for three main features:
+The platform leverages Google's Gemini AI for:
 
 - **Summarization**: Converts lengthy notes into concise, bullet-pointed summaries
 - **Quiz Generation**: Creates multiple-choice questions based on note content
@@ -232,14 +143,14 @@ Built on Supabase's real-time capabilities:
 - **Instant Updates**: Changes to groups and notes are reflected immediately
 - **Presence Indicators**: See who's online and active in groups
 
-### Rich Text Editing
+### Performance Optimizations
 
-Powered by TipTap editor with features like:
+- **Database Query Caching**: Frequently accessed data cached using Supabase
+- **Static Asset Caching**: Images and content cached with appropriate headers
+- **CDN Optimization**: Assets served through Vercel's global CDN
+- **Image Optimization**: Next.js Image component with automatic optimization
 
-- **Formatting Options**: Bold, italic, underline, highlighting
-- **Structure Elements**: Headers, lists, blockquotes, code blocks
-- **Text Alignment**: Left, center, right, justify
-- **Character/Word Counting**: Real-time statistics
+</details>
 
 ## 🎯 Usage Examples
 
@@ -269,83 +180,26 @@ Powered by TipTap editor with features like:
 
 ### Deploy to Vercel (Recommended)
 
-1. **Connect your repository to Vercel**
-2. **Set environment variables** in Vercel dashboard
-3. **Deploy** - Vercel will automatically build and deploy your app
+1. Connect your repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy - Vercel will automatically build and deploy your app
 
-### Environment Variables for Production
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_production_service_role_key
-GEMINI_SECRET_KEY=your_gemini_api_key
-```
+For detailed deployment instructions, see **[SETUP.md](SETUP.md)**.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! For detailed development setup instructions, see **[SETUP.md](SETUP.md)**.
 
-### Setting Up Local Development
+### Quick Contributing Guide
 
-1. **Fork and clone the repository**
+1. Fork and clone the repository
+2. Install dependencies with `npm install`
+3. Set up your local Supabase instance
+4. Configure environment variables
+5. Run `npm run dev` to start development
+6. Submit a pull request
 
-   ```bash
-   git clone https://github.com/yourusername/huddle.git
-   cd huddle
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Set up your local Supabase instance**
-
-   ```bash
-   # Install Supabase CLI if you haven't already
-   npm install -g supabase
-
-   # Start local Supabase
-   npx supabase start
-
-   # Apply database migrations
-   npx supabase db push
-   ```
-
-4. **Configure environment variables**
-
-   Create a `.env.local` file with your local Supabase credentials:
-
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_local_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_local_service_role_key
-   GEMINI_SECRET_KEY=your_gemini_api_key
-   ```
-
-5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-
-### Database Migrations
-
-All database schema changes are managed through Supabase migrations located in the `supabase/migrations/` folder:
-
-- To create a new migration: `npx supabase migration new your_migration_name`
-- To apply migrations: `npx supabase db push`
-- To reset your local database: `npx supabase db reset`
-
-### Development Guidelines
-
-1. Follow the existing code style and conventions
-2. Add comments for complex logic
-3. Test your changes thoroughly
-4. Update documentation as needed
-5. Run migrations locally before pushing changes
-6. Ensure your changes work with the latest database schema
+For major changes, please open an issue first to discuss what you would like to change.
 
 ## 📄 License
 
