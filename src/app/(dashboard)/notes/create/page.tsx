@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import NoteEditor from "@/components/notes/NoteEditor";
 import { createNote } from "@/lib/noteActions";
-import { extractTextFromPDF } from "@/lib/pdfExtractor";
+import { extractTextFromPDF } from "@/lib/pdfUtils/pdfExtractor";
 
 export default function CreateNotePage() {
   const router = useRouter();
@@ -89,7 +89,6 @@ export default function CreateNotePage() {
         // Add PDF content with some formatting
         const pdfContent = `
         <h3>Content from: ${file.name}</h3>
-        <p><em>Extracted from ${result.pageCount} page${result.pageCount !== 1 ? "s" : ""}</em></p>
         <div>${result.text.replace(/\n\n/g, "</p><p>").replace(/^\s*/, "<p>").replace(/\s*$/, "</p>")}</div>
       `;
 
