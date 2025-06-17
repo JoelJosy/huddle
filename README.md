@@ -205,7 +205,7 @@ For major changes, please open an issue first to discuss what you would like to 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **[Vercel](https://vercel.com/)** - For the amazing deployment platform
 - **[Supabase](https://supabase.com/)** - For the powerful backend infrastructure
@@ -216,12 +216,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[Lucide](https://lucide.dev/)** - For the icon library
 - **[Tailwind CSS](https://tailwindcss.com/)** - For the utility-first CSS framework
 
-## 📞 Contact
+## Contact
 
 If you have any questions or suggestions, feel free to reach out:
 
 - **GitHub**: [JoelJosy](https://github.com/JoelJosy)
 - **Email**: contact.jolb@gmail.com
-- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/joel-josy/)
+- **LinkedIn**: [Joel Josy](https://linkedin.com/in/joel-josy/)
 
 ---
