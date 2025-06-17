@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus, X, Upload, FileText } from "lucide-react";
+import { ArrowLeft, Plus, X, Upload, FileText, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +26,8 @@ export default function CreateNotePage() {
   const [tags, setTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isPdfProcessing, setIsPdfProcessing] = useState(false);
+  const [isPrettifying, setIsPrettifying] = useState(false);
+  const [lastUploadedFileName, setLastUploadedFileName] = useState<string>("");
 
   const addTag = (e?: React.MouseEvent) => {
     if (e) {
@@ -81,6 +83,9 @@ export default function CreateNotePage() {
         setTitle(result.title);
       }
 
+      // Store the filename for prettify feature
+      setLastUploadedFileName(file.name);
+
       // Insert extracted text into the editor
       if (editorRef.current && editorRef.current.commands) {
         // Get current content
@@ -89,6 +94,7 @@ export default function CreateNotePage() {
         // Add PDF content with some formatting
         const pdfContent = `
         <h3>Content from: ${file.name}</h3>
+        <p><em>Extracted from ${result.pageCount} page${result.pageCount !== 1 ? "s" : ""}</em></p>
         <div>${result.text.replace(/\n\n/g, "</p><p>").replace(/^\s*/, "<p>").replace(/\s*$/, "</p>")}</div>
       `;
 
@@ -131,6 +137,100 @@ export default function CreateNotePage() {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+    }
+  };
+
+  const handlePrettifyContent = async () => {
+    if (!editorRef.current) {
+      toast.error("Editor not available");
+      return;
+    }
+
+    // Get current content
+    const currentContent = editorRef.current.getHTML();
+    if (
+      !currentContent ||
+      currentContent.trim() === "" ||
+      currentContent === "<p></p>"
+    ) {
+      toast.error("No content to prettify. Please upload a PDF first.");
+      return;
+    }
+
+    setIsPrettifying(true);
+    toast.info("Making your content beautiful with AI...");
+
+    try {
+      // Extract text content for formatting
+      const textContent = editorRef.current.getText
+        ? editorRef.current.getText()
+        : currentContent
+            .replace(/<[^>]*>/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+
+      const response = await fetch("/notes/create/api/format-pdf-text", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: textContent,
+          fileName: lastUploadedFileName || "Document",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to format content");
+      }
+
+      const { success, formattedText, error } = await response.json();
+
+      if (!success) {
+        throw new Error(error || "Failed to format content");
+      }
+
+      // Replace editor content with prettified version
+      if (editorRef.current.commands) {
+        const beautifiedContent = `
+          <div style="border-left: 4px solid #3b82f6; padding-left: 16px; margin: 20px 0;">
+            <div style="background-color: #f1f5f9; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+              <h4 style="margin: 0; color: #1e40af;">✨ ${lastUploadedFileName || "Document"}</h4>
+              <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">
+                Content formatted and structured by AI
+              </p>
+            </div>
+            ${formattedText}
+          </div>
+        `;
+
+        editorRef.current.commands.setContent(beautifiedContent);
+      } else if (typeof editorRef.current.setContent === "function") {
+        const beautifiedContent = `
+          <div style="border-left: 4px solid #3b82f6; padding-left: 16px; margin: 20px 0;">
+            <div style="background-color: #f1f5f9; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+              <h4 style="margin: 0; color: #1e40af;">✨ ${lastUploadedFileName || "Document"}</h4>
+              <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">
+                Content formatted and structured by AI
+              </p>
+            </div>
+            ${formattedText}
+          </div>
+        `;
+
+        editorRef.current.setContent(beautifiedContent);
+      }
+
+      toast.success("Content successfully prettified with AI!");
+    } catch (error) {
+      console.error("Error prettifying content:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to prettify content. Please try again.",
+      );
+    } finally {
+      setIsPrettifying(false);
     }
   };
 
@@ -259,8 +359,6 @@ export default function CreateNotePage() {
                     </div>
                   </div>
 
-                  <Separator />
-
                   {/* Title */}
                   <div className="space-y-2">
                     <Label htmlFor="title">
@@ -361,6 +459,35 @@ export default function CreateNotePage() {
                     >
                       Cancel
                     </Button>
+                  </div>
+
+                  <Separator />
+
+                  {/* Prettify Content Button */}
+                  <div className="space-y-2">
+                    <Label>AI Content Formatting</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handlePrettifyContent}
+                      disabled={isPrettifying || isPdfProcessing}
+                      className="bg-secondary w-full"
+                    >
+                      {isPrettifying ? (
+                        <>
+                          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          Prettifying with AI...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Prettify Content with AI
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-muted-foreground text-xs">
+                      Use AI to format and structure your content beautifully
+                    </p>
                   </div>
                 </CardContent>
               </Card>
