@@ -36,8 +36,10 @@ export default function GroupChatArea({
 }: GroupChatAreaProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+  const [pendingMessages, setPendingMessages] = useState<Set<string>>(
+    new Set(),
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
   const [currentUserProfile, setCurrentUserProfile] = useState<any>(null);
@@ -133,15 +135,38 @@ export default function GroupChatArea({
                 const exists = prev.some((msg) => msg.id === newMessage.id);
                 if (exists) return prev;
 
-                // Remove any optimistic messages from the same user with similar content
-                const filtered = prev.filter(
-                  (msg) =>
-                    !(
+                // Remove any optimistic messages from the same user with similar content and timestamp
+                const filtered = prev.filter((msg) => {
+                  if (!msg.id.startsWith("temp-")) return true;
+
+                  // Remove optimistic message if it matches content and user and is close in time
+                  const timeDiff = Math.abs(
+                    new Date(newMessage.created_at).getTime() -
+                      new Date(msg.created_at).getTime(),
+                  );
+
+                  return !(
+                    msg.user_id === newMessage.user_id &&
+                    msg.content === newMessage.content &&
+                    timeDiff < 5000 // Within 5 seconds
+                  );
+                });
+
+                // Also remove from pending messages set
+                setPendingMessages((prev) => {
+                  const newSet = new Set(prev);
+                  // Find and remove the corresponding temp message
+                  filtered.forEach((msg) => {
+                    if (
                       msg.id.startsWith("temp-") &&
                       msg.user_id === newMessage.user_id &&
                       msg.content === newMessage.content
-                    ),
-                );
+                    ) {
+                      newSet.delete(msg.id);
+                    }
+                  });
+                  return newSet;
+                });
 
                 return [...filtered, newMessage];
               });
@@ -186,19 +211,30 @@ export default function GroupChatArea({
 
     // Add message immediately (optimistic update)
     setMessages((prev) => [...prev, optimisticMessage]);
-    setNewMessage("");
+    setPendingMessages((prev) => new Set(prev).add(tempId));
+    setNewMessage(""); // Clear input immediately for next message
 
     try {
-      setIsLoading(true);
       await sendMessage(groupId, messageContent);
 
-      // Remove optimistic message after successful send
-      // The real message will come through the subscription
-      setTimeout(() => {
-        setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
-      }, 1000);
+      // Remove from pending set after successful send
+      setPendingMessages((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(tempId);
+        return newSet;
+      });
+
+      // The optimistic message will be automatically removed when the real message arrives
+      // through the subscription
     } catch (error) {
       console.error("Error sending message:", error);
+
+      // Remove from pending set
+      setPendingMessages((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(tempId);
+        return newSet;
+      });
 
       // Remove failed optimistic message
       setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
@@ -206,8 +242,6 @@ export default function GroupChatArea({
       // Show error and restore message content
       toast.error("Failed to send message");
       setNewMessage(messageContent);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -249,7 +283,7 @@ export default function GroupChatArea({
               <div
                 key={message.id}
                 className={`flex gap-3 ${message.user_id === currentUserId ? "justify-end" : ""} ${
-                  message.id.startsWith("temp-") ? "opacity-95" : ""
+                  message.id.startsWith("temp-") ? "opacity-75" : ""
                 }`}
               >
                 {/* Others Avatar */}
@@ -281,9 +315,9 @@ export default function GroupChatArea({
                         "Unknown User"}
                     </p>
                   )}
-                  {/* BG color */}
+                  {/* Message bubble with pending indicator */}
                   <div
-                    className={`rounded-lg p-3 ${
+                    className={`relative rounded-lg p-3 ${
                       message.user_id === currentUserId
                         ? "bg-primary text-primary-foreground"
                         : "bg-secondary"
@@ -293,6 +327,11 @@ export default function GroupChatArea({
                     <p className="break-words whitespace-pre-wrap">
                       {message.content}
                     </p>
+                    {/* Pending indicator for optimistic messages */}
+                    {message.id.startsWith("temp-") &&
+                      pendingMessages.has(message.id) && (
+                        <div className="absolute -right-1 -bottom-1 h-3 w-3 animate-pulse rounded-full bg-yellow-500" />
+                      )}
                   </div>
                   {/* Timestamp */}
                   <p className="text-muted-foreground mt-1 text-right text-xs">
@@ -337,17 +376,18 @@ export default function GroupChatArea({
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             className="min-h-[60px] resize-none"
-            disabled={isLoading}
           />
-          <Button
-            type="submit"
-            size="icon"
-            disabled={!newMessage.trim() || isLoading}
-          >
+          <Button type="submit" size="icon" disabled={!newMessage.trim()}>
             <SendHorizontal className="h-4 w-4" />
             <span className="sr-only">Send message</span>
           </Button>
         </div>
+        {pendingMessages.size > 0 && (
+          <div className="text-muted-foreground mt-2 text-xs">
+            {pendingMessages.size} message{pendingMessages.size > 1 ? "s" : ""}{" "}
+            sending...
+          </div>
+        )}
       </form>
     </div>
   );
